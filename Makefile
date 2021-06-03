@@ -16,10 +16,10 @@ HAVE_GIFLIB = 1
 HAVE_LIBEXIF = 1
 
 # Uncomment to enable SVG support / SVG_IMAGE_SUPPORT_PATCH
-#svglibs = `pkg-config --cflags --libs librsvg-2.0 cairo`
+svglibs = `pkg-config --cflags --libs librsvg-2.0 cairo`
 
 # Uncomment to enable WebP support / WEBP_IMAGE_SUPPORT_PATCH
-#webplibs = -lwebpdemux -lwebp
+webplibs = -lwebpdemux -lwebp
 
 cflags = -std=c99 -Wall -pedantic $(CFLAGS)
 cppflags = -I. $(CPPFLAGS) -D_XOPEN_SOURCE=700 \
@@ -95,4 +95,3 @@ uninstall:
 	rm -f $(DESTDIR)$(MANPREFIX)/man1/sxiv.1
 	@echo "REMOVE share/sxiv/"
 	rm -rf $(DESTDIR)$(PREFIX)/share/sxiv
-
