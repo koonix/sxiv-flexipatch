@@ -21,6 +21,10 @@ HAVE_LIBEXIF = 1
 # Uncomment to enable WebP support / WEBP_IMAGE_SUPPORT_PATCH
 #webplibs = -lwebpdemux -lwebp
 
+# Uncomment to enable libcurl support / LIBCURL_PATCH
+#curllibs = -lcurl
+#curlobjs = url.o
+
 cflags = -std=c99 -Wall -pedantic $(CFLAGS)
 cppflags = -I. $(CPPFLAGS) -D_XOPEN_SOURCE=700 \
   -DHAVE_GIFLIB=$(HAVE_GIFLIB) -DHAVE_LIBEXIF=$(HAVE_LIBEXIF) \
@@ -31,10 +35,10 @@ lib_exif_1 = -lexif
 lib_gif_0 =
 lib_gif_1 = -lgif
 ldlibs = $(LDLIBS) -lImlib2 -lX11 -lXft -lfontconfig \
-  $(lib_exif_$(HAVE_LIBEXIF)) $(lib_gif_$(HAVE_GIFLIB)) $(webplibs)
+  $(lib_exif_$(HAVE_LIBEXIF)) $(lib_gif_$(HAVE_GIFLIB)) $(webplibs) $(curllibs)
 
 objs = autoreload_$(AUTORELOAD).o commands.o image.o main.o options.o \
-  thumbs.o util.o window.o
+  thumbs.o util.o window.o $(curlobjs)
 
 all: sxiv
 

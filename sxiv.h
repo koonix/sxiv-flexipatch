@@ -126,6 +126,9 @@ typedef enum {
 typedef struct {
 	const char *name; /* as given by user */
 	const char *path; /* always absolute */
+	#if LIBCURL_PATCH
+	const char *url;
+	#endif // LIBCURL_PATCH
 	fileflags_t flags;
 } fileinfo_t;
 

@@ -27,6 +27,20 @@
  */
 #define IMAGE_MODE_CYCLE_PATCH 0
 
+/* Add support for remote links with libcurl
+ *
+ * The binary now supports the displays of remote images with libcurl
+ * bindings. One can pass the url to the binary like a local file.
+ *
+ * This patch depends on the following libraries for loading images via curl:
+ *    - curl
+ *
+ * Remember to uncomment the relevant lines in the Makefile when enabling this patch.
+ *
+ * https://github.com/explosion-mental/sxiv/blob/main/patches/libcurl.patch
+ */
+#define LIBCURL_PATCH 0
+
 /* Adds fill scale mode.
  * https://github.com/muennich/sxiv/pull/446
  */
