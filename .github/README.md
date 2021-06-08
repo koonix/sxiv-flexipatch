@@ -13,6 +13,8 @@ Refer to [https://github.com/muennich/sxiv](https://github.com/muennich/sxiv) fo
 
 ### Changelog:
 
+2021-06-08 - Added the thumb paddings patch
+
 2021-05-25 - Added fill scale mode
 
 2021-04-12 - Added animated WebP support
@@ -40,6 +42,9 @@ Refer to [https://github.com/muennich/sxiv](https://github.com/muennich/sxiv) fo
 
    - [svg-image-support](https://github.com/muennich/sxiv/pull/440)
       - adds support for the SVG image format
+
+   - [thumb-paddings](https://github.com/explosion-mental/sxiv/blob/main/patches/thumb_paddings.patch)
+      - adds some control over the padding between thumbnails
 
    - [webp-image-support](https://github.com/muennich/sxiv/pull/437)
       - adds support for animated WebP images

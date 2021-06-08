@@ -49,6 +49,11 @@
  */
 #define SVG_IMAGE_SUPPORT_PATCH 0
 
+/* Adds some control over the padding between thumbnails.
+ * https://github.com/explosion-mental/sxiv/blob/main/patches/thumb_paddings.patch
+ */
+#define THUMBS_PADDING_PATCH 0
+
 /* Adds support for animated WebP image format.
  * Note that as-is sxiv has support for still WebP images through the Imlib2 library. This
  * only adds support for animated WebP images (similar to animated GIF images).

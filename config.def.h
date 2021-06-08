@@ -60,6 +60,12 @@ enum {
 /* thumbnail sizes in pixels (width == height): */
 static const int thumb_sizes[] = { 32, 64, 96, 128, 160 };
 
+#if THUMBS_PADDING_PATCH
+const int THUMB_BORDERS[] = { 2, 2, 2, 2, 2 };
+const int THUMB_MARGIN = -1;
+const int THUMB_PADDING = 2;
+#endif // THUMBS_PADDING_PATCH
+
 /* thumbnail size at startup, index into thumb_sizes[]: */
 static const int THUMB_SIZE = 3;
 

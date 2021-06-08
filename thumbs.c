@@ -446,8 +446,13 @@ void tns_render(tns_t *tns)
 			cnt -= r % tns->cols;
 	}
 	r = cnt % tns->cols ? 1 : 0;
+	#if THUMBS_PADDING_PATCH
+	tns->x = x = (win->w - MIN(cnt, tns->cols) * tns->dim) / 2 + tns->bw + THUMB_PADDING + THUMB_MARGIN;
+	tns->y = y = (win->h - (cnt / tns->cols + r) * tns->dim) / 2 + tns->bw + THUMB_PADDING + THUMB_MARGIN;
+	#else
 	tns->x = x = (win->w - MIN(cnt, tns->cols) * tns->dim) / 2 + tns->bw + 3;
 	tns->y = y = (win->h - (cnt / tns->cols + r) * tns->dim) / 2 + tns->bw + 3;
+	#endif // THUMBS_PADDING_PATCH
 	tns->loadnext = *tns->cnt;
 	tns->end = tns->first + cnt;
 
@@ -508,10 +513,19 @@ void tns_highlight(tns_t *tns, int n, bool hl)
 		win_t *win = tns->win;
 		thumb_t *t = &tns->thumbs[n];
 		unsigned long col = hl ? win->fg.pixel : win->bg.pixel;
+		#if THUMBS_PADDING_PATCH
+		int x = t->x - THUMB_PADDING - tns->bw / 2 - tns->bw % 2,
+		    y = t->y - THUMB_PADDING - tns->bw / 2 - tns->bw % 2,
+		    w = t->w + 2 * THUMB_PADDING + tns->bw,
+		    h = t->h + 2 * THUMB_PADDING + tns->bw;
+
+		win_draw_rect(win, x, y, w, h, false, tns->bw, col);
+		#else
 		int oxy = (tns->bw + 1) / 2 + 1, owh = tns->bw + 2;
 
 		win_draw_rect(win, t->x - oxy, t->y - oxy, t->w + owh, t->h + owh,
 		              false, tns->bw, col);
+		#endif // THUMBS_PADDING_PATCH
 
 		if (tns->files[n].flags & FF_MARK)
 			tns_mark(tns, n, true);
@@ -583,9 +597,14 @@ bool tns_zoom(tns_t *tns, int d)
 	tns->zl = MAX(tns->zl, 0);
 	tns->zl = MIN(tns->zl, ARRLEN(thumb_sizes)-1);
 
+	#if THUMBS_PADDING_PATCH
+	tns->bw = THUMB_BORDERS[tns->zl];
+	tns->dim = thumb_sizes[tns->zl] + 2 * (tns->bw + THUMB_PADDING + THUMB_MARGIN);
+	#else
 	tns->bw = ((thumb_sizes[tns->zl] - 1) >> 5) + 1;
 	tns->bw = MIN(tns->bw, 4);
 	tns->dim = thumb_sizes[tns->zl] + 2 * tns->bw + 6;
+	#endif // THUMBS_PADDING_PATCH
 
 	if (tns->zl != oldzl) {
 		for (i = 0; i < *tns->cnt; i++)
