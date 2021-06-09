@@ -21,7 +21,7 @@ version and further details on sxiv, how to install it and how it works.
 
 ### Changelog:
 
-2021-06-09 - Added the marks counter, marks border, window title and swap bar colors patches
+2021-06-09 - Added the marks count, marks border, window title and swap bar colors patches
 
 2021-06-08 - Added the thumb paddings and the libcurl patches
 
@@ -51,7 +51,7 @@ version and further details on sxiv, how to install it and how it works.
    - [marks-border](https://github.com/muennich/sxiv/issues/294)
       - shows marked files with a separate colored border in the thumbnail view
 
-   - [marks-counter](https://github.com/muennich/sxiv/issues/294)
+   - [marks-count](https://github.com/muennich/sxiv/issues/294)
       - shows the number of marked files in the thumbnail view
 
    - [scale-mode-fill](https://github.com/muennich/sxiv/pull/446)
