@@ -74,6 +74,11 @@
  */
 #define SVG_IMAGE_SUPPORT_PATCH 0
 
+/* Swaps the foreground and background colors of the bar.
+ * https://github.com/muennich/sxiv/pull/392
+ */
+#define SWAP_BAR_COLORS_PATCH 0
+
 /* Adds some control over the padding between thumbnails.
  * https://github.com/explosion-mental/sxiv/blob/main/patches/thumb_paddings.patch
  */

@@ -456,23 +456,40 @@ void win_draw_bar(win_t *win)
 	d = XftDrawCreate(e->dpy, win->buf.pm, DefaultVisual(e->dpy, e->scr),
 	                  DefaultColormap(e->dpy, e->scr));
 
+	#if SWAP_BAR_COLORS_PATCH
+	XSetForeground(e->dpy, gc, win->bg.pixel);
+	#else
 	XSetForeground(e->dpy, gc, win->fg.pixel);
+	#endif // SWAP_BAR_COLORS_PATCH
 	XFillRectangle(e->dpy, win->buf.pm, gc, 0, win->h, win->w, win->bar.h);
 
+	#if SWAP_BAR_COLORS_PATCH
+	XSetForeground(e->dpy, gc, win->fg.pixel);
+	XSetBackground(e->dpy, gc, win->bg.pixel);
+	#else
 	XSetForeground(e->dpy, gc, win->bg.pixel);
 	XSetBackground(e->dpy, gc, win->fg.pixel);
+	#endif // SWAP_BAR_COLORS_PATCH
 
 	if ((len = strlen(r->buf)) > 0) {
 		if ((tw = TEXTWIDTH(win, r->buf, len)) > w)
 			return;
 		x = win->w - tw - H_TEXT_PAD;
 		w -= tw;
+		#if SWAP_BAR_COLORS_PATCH
+		win_draw_text(win, d, &win->fg, x, y, r->buf, len, tw);
+		#else
 		win_draw_text(win, d, &win->bg, x, y, r->buf, len, tw);
+		#endif // SWAP_BAR_COLORS_PATCH
 	}
 	if ((len = strlen(l->buf)) > 0) {
 		x = H_TEXT_PAD;
 		w -= 2 * H_TEXT_PAD; /* gap between left and right parts */
+		#if SWAP_BAR_COLORS_PATCH
+		win_draw_text(win, d, &win->fg, x, y, l->buf, len, w);
+		#else
 		win_draw_text(win, d, &win->bg, x, y, l->buf, len, w);
+		#endif // SWAP_BAR_COLORS_PATCH
 	}
 	XftDrawDestroy(d);
 }

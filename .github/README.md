@@ -21,7 +21,7 @@ version and further details on sxiv, how to install it and how it works.
 
 ### Changelog:
 
-2021-06-09 - Added the marks counter, marks border and window title patches
+2021-06-09 - Added the marks counter, marks border, window title and swap bar colors patches
 
 2021-06-08 - Added the thumb paddings and the libcurl patches
 
@@ -62,6 +62,9 @@ version and further details on sxiv, how to install it and how it works.
 
    - [svg-image-support](https://github.com/muennich/sxiv/pull/440)
       - adds support for the SVG image format
+
+   - [swap-bar-colors](https://github.com/muennich/sxiv/pull/392)
+      - swaps the foreground and background colors of the bar
 
    - [thumb-paddings](https://github.com/explosion-mental/sxiv/blob/main/patches/thumb_paddings.patch)
       - adds some control over the padding between thumbnails
