@@ -422,7 +422,11 @@ void update_info(void)
 		#endif // LIBCURL_PATCH
 		else
 			strncpy(l->buf, files[fileidx].name, l->size);
+		#if MARK_COUNT_PATCH
+		bar_put(r, "%s%d %0*d/%d", mark, markcnt, fw, fileidx + 1, filecnt);
+		#else
 		bar_put(r, "%s%0*d/%d", mark, fw, fileidx + 1, filecnt);
+		#endif // MARK_COUNT_PATCH
 	} else {
 		bar_put(r, "%s", mark);
 		if (img.ss.on) {

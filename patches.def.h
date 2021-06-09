@@ -41,6 +41,11 @@
  */
 #define LIBCURL_PATCH 0
 
+/* Shows the number of marked files in the thumbnail view.
+ * https://github.com/muennich/sxiv/issues/294
+ */
+#define MARK_COUNT_PATCH 0
+
 /* Adds fill scale mode.
  * https://github.com/muennich/sxiv/pull/446
  */
