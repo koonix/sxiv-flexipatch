@@ -123,6 +123,18 @@ typedef enum {
 	FF_TN_INIT = 4
 } fileflags_t;
 
+#if WINDOW_TITLE_PATCH
+typedef enum {
+	BASE_CFILE,
+	BASE_CDIR,
+	CFILE,
+	CDIR,
+	EMPTY,
+
+	SUFFIXMODE_COUNT,
+} suffixmode_t;
+#endif // WINDOW_TITLE_PATCH
+
 typedef struct {
 	const char *name; /* as given by user */
 	const char *path; /* always absolute */
@@ -438,6 +450,12 @@ struct win {
 	#if MARK_BORDER_PATCH
 	XftColor mark;
 	#endif // MARK_BORDER_PATCH
+
+	#if WINDOW_TITLE_PATCH
+	suffixmode_t suffixmode;
+	const char   *prefix;
+	const char   *suffix;
+	#endif // WINDOW_TITLE_PATCH
 
 	int x;
 	int y;

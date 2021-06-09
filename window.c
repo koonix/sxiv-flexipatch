@@ -24,6 +24,9 @@
 
 #include <stdlib.h>
 #include <string.h>
+#if WINDOW_TITLE_PATCH
+#include <libgen.h>
+#endif // WINDOW_TITLE_PATCH
 #include <locale.h>
 #if EWMH_NET_WM_PID_PATCH
 #include <unistd.h>
@@ -124,6 +127,12 @@ void win_init(win_t *win)
 
 	f = win_res(db, RES_CLASS ".font", "monospace-8");
 	win_init_font(e, f);
+
+	#if WINDOW_TITLE_PATCH
+	win->prefix = win_res(db, RES_CLASS ".titlePrefix", "sxiv - ");
+	win->suffixmode = strtol(win_res(db, RES_CLASS ".titleSuffix", "0"),
+	                         NULL, 10) % SUFFIXMODE_COUNT;
+	#endif // WINDOW_TITLE_PATCH
 
 	bg = win_res(db, RES_CLASS ".background", "white");
 	fg = win_res(db, RES_CLASS ".foreground", "black");
@@ -279,7 +288,9 @@ void win_open(win_t *win)
 	}
 	free(icon_data);
 
+	#if !WINDOW_TITLE_PATCH
 	win_set_title(win, "sxiv");
+	#endif // WINDOW_TITLE_PATCH
 
 	classhint.res_class = RES_CLASS;
 	classhint.res_name = options->res_name != NULL ? options->res_name : "sxiv";
@@ -491,6 +502,58 @@ void win_draw_rect(win_t *win, int x, int y, int w, int h, bool fill, int lw,
 		XDrawRectangle(win->env.dpy, win->buf.pm, gc, x, y, w, h);
 }
 
+#if WINDOW_TITLE_PATCH
+void win_set_title(win_t *win, const char *path)
+{
+	char *title, *suffix="";
+	static bool first_time = true;
+
+	/* Return if window is not ready yet, otherwise we get an X fault. */
+	if (win->xwin == None)
+		return;
+
+	/* Get title suffix type from X-resources. Default: BASE_CDIR. */
+	suffix = estrdup(path);
+	switch (win->suffixmode) {
+		case CFILE:
+			win->suffix = suffix;
+			break;
+		case BASE_CFILE:
+			win->suffix = basename(suffix);
+			break;
+		case CDIR:
+			win->suffix = dirname(suffix);
+			break;
+		case BASE_CDIR:
+			win->suffix = basename(dirname(suffix));
+			break;
+		case SUFFIXMODE_COUNT: // Never happens
+		case EMPTY:
+			win->suffix = "";
+			break;
+	}
+
+	/* Some ancient WM's that don't comply to EMWH (e.g. mwm) only use WM_NAME for
+	 * the window title, which is set by XStoreName below. */
+	title = emalloc(strlen(win->prefix) + strlen(win->suffix) + 1);
+	(void)sprintf(title, "%s%s", win->prefix, win->suffix);
+	XChangeProperty(win->env.dpy, win->xwin, atoms[ATOM__NET_WM_NAME],
+	                XInternAtom(win->env.dpy, "UTF8_STRING", False), 8,
+	                PropModeReplace, (unsigned char *) title, strlen(title));
+	XChangeProperty(win->env.dpy, win->xwin, atoms[ATOM__NET_WM_ICON_NAME],
+	                XInternAtom(win->env.dpy, "UTF8_STRING", False), 8,
+	                PropModeReplace, (unsigned char *) title, strlen(title));
+	free(title);
+	free(suffix);
+
+	/* These two atoms won't change and thus only need to be set once. */
+	if (first_time) {
+		XStoreName(win->env.dpy, win->xwin, "sxiv");
+		XSetIconName(win->env.dpy, win->xwin, "sxiv");
+		first_time = false;
+	}
+}
+#else
 void win_set_title(win_t *win, const char *title)
 {
 	XStoreName(win->env.dpy, win->xwin, title);
@@ -503,6 +566,7 @@ void win_set_title(win_t *win, const char *title)
 	                XInternAtom(win->env.dpy, "UTF8_STRING", False), 8,
 	                PropModeReplace, (unsigned char *) title, strlen(title));
 }
+#endif // WINDOW_TITLE_PATCH
 
 void win_set_cursor(win_t *win, cursor_t cursor)
 {

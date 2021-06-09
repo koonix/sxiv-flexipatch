@@ -102,6 +102,25 @@
  */
 #define WINDOW_FIT_IMAGE_PATCH 0
 
+/* Adds the name or path of the currently viewed file to the window title.
+ *
+ * You can change the title prefix (defaults to "sxiv - ") by setting Sxiv.titlePrefix
+ * in your .Xresources file.
+ *
+ * You can change the title suffix (defaults to 0) by setting Sxiv.titleSuffix in your
+ * .Xresources file - refer to the following values:
+ *
+ *    Value  Format
+ *    0      Basename of file
+ *    1      Basename of directory
+ *    2      Full path to file
+ *    3      Full path to directory
+ *    4      Empty string
+ *
+ * https://github.com/muennich/sxiv/pull/453
+ */
+#define WINDOW_TITLE_PATCH 0
+
 /*
  * With this patch when the window is mapped, some ICCCM WM_HINTS are set.
  * The input field is set to true and state is set to NormalState.

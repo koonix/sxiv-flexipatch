@@ -35,6 +35,9 @@ void exif_auto_orientate(const fileinfo_t*);
 Imlib_Image img_open(const fileinfo_t*);
 
 static char *cache_dir;
+#if WINDOW_TITLE_PATCH
+extern const int fileidx;
+#endif // WINDOW_TITLE_PATCH
 
 char* tns_cache_filepath(const char *filepath)
 {
@@ -571,6 +574,9 @@ bool tns_move_selection(tns_t *tns, direction_t dir, int cnt)
 		if (!tns->dirty)
 			tns_highlight(tns, *tns->sel, true);
 	}
+	#if WINDOW_TITLE_PATCH
+	win_set_title(tns->win, tns->files[fileidx].path);
+	#endif // WINDOW_TITLE_PATCH
 	return *tns->sel != old;
 }
 

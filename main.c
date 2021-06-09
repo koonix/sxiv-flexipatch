@@ -365,6 +365,9 @@ void load_image(int new)
 	close_info();
 	open_info();
 	arl_setup(&arl, files[fileidx].path);
+	#if WINDOW_TITLE_PATCH
+	win_set_title(&win, files[fileidx].path);
+	#endif // WINDOW_TITLE_PATCH
 
 	if (img.multi.cnt > 0 && img.multi.animate)
 		set_timeout(animate, img.multi.frames[img.multi.sel].delay, true);
@@ -1044,6 +1047,9 @@ int main(int argc, char **argv)
 	#endif // WINDOW_FIT_IMAGE_PATCH
 
 	win_open(&win);
+	#if WINDOW_TITLE_PATCH
+	win_set_title(&win, files[fileidx].path);
+	#endif // WINDOW_TITLE_PATCH
 	win_set_cursor(&win, CURSOR_WATCH);
 
 	atexit(cleanup);

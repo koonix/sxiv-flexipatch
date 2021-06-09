@@ -21,7 +21,7 @@ version and further details on sxiv, how to install it and how it works.
 
 ### Changelog:
 
-2021-06-09 - Added the marks counter and marks border patches
+2021-06-09 - Added the marks counter, marks border and window title patches
 
 2021-06-08 - Added the thumb paddings and the libcurl patches
 
@@ -71,6 +71,9 @@ version and further details on sxiv, how to install it and how it works.
 
    - [window-fit-image](https://github.com/i-tsvetkov/sxiv-patches)
       - makes the window size fit the image when displaying a single image
+
+   - [window-title](https://github.com/muennich/sxiv/pull/453)
+      - adds the name or path of the currently viewed file to the window title
 
    - [wm-hints](https://github.com/muennich/sxiv/pull/406)
       - without this there is the potential for some window managers assuming that sxiv does not
