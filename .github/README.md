@@ -21,6 +21,8 @@ version and further details on sxiv, how to install it and how it works.
 
 ### Changelog:
 
+2021-06-09 - Added the marks counter and marks border patches
+
 2021-06-08 - Added the thumb paddings and the libcurl patches
 
 2021-05-25 - Added fill scale mode
@@ -45,6 +47,12 @@ version and further details on sxiv, how to install it and how it works.
 
    - [libcurl](https://github.com/explosion-mental/sxiv/blob/main/patches/libcurl.patch)
       - add support for remote links with libcurl
+
+   - [marks-border](https://github.com/muennich/sxiv/issues/294)
+      - shows marked files with a separate colored border in the thumbnail view
+
+   - [marks-counter](https://github.com/muennich/sxiv/issues/294)
+      - shows the number of marked files in the thumbnail view
 
    - [scale-mode-fill](https://github.com/muennich/sxiv/pull/446)
       - adds fill scale mode

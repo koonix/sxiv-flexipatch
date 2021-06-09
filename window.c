@@ -96,6 +96,9 @@ void win_init(win_t *win)
 {
 	win_env_t *e;
 	const char *bg, *fg, *f;
+	#if MARK_BORDER_PATCH
+	const char *mk;
+	#endif // MARK_BORDER_PATCH
 	char *res_man;
 	XrmDatabase db;
 
@@ -124,6 +127,10 @@ void win_init(win_t *win)
 
 	bg = win_res(db, RES_CLASS ".background", "white");
 	fg = win_res(db, RES_CLASS ".foreground", "black");
+	#if MARK_BORDER_PATCH
+	mk = win_res(db, RES_CLASS ".mark", "orange");
+	win_alloc_color(e, mk, &win->mark);
+	#endif // MARK_BORDER_PATCH
 	win_alloc_color(e, bg, &win->bg);
 	win_alloc_color(e, fg, &win->fg);
 

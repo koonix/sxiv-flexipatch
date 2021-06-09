@@ -435,6 +435,9 @@ struct win {
 
 	XftColor bg;
 	XftColor fg;
+	#if MARK_BORDER_PATCH
+	XftColor mark;
+	#endif // MARK_BORDER_PATCH
 
 	int x;
 	int y;

@@ -41,6 +41,12 @@
  */
 #define LIBCURL_PATCH 0
 
+/* Shows marked files with a separate colored border in the thumbnail view.
+ * The color can be specified by adding Sxiv.mark in your .Xresources file.
+ * https://github.com/muennich/sxiv/issues/294
+ */
+#define MARK_BORDER_PATCH 0
+
 /* Shows the number of marked files in the thumbnail view.
  * https://github.com/muennich/sxiv/issues/294
  */
