@@ -30,20 +30,24 @@ const opt_t *options = (const opt_t*) &_options;
 
 void print_usage(void)
 {
-	printf("usage: sxiv [-abcfhiopqrtvZ] [-A FRAMERATE] [-e WID] [-G GAMMA] "
-	       "[-g GEOMETRY] [-N NAME] "
-	       #if SET_WSET_WINDOW_TITLE_PATCH
-	       "[-T TITLE] "
-	       #endif // SET_WINDOW_TITLE_PATCH
-	       "[-n NUM] [-S DELAY] [-s MODE] [-z ZOOM] "
-	       #if START_FROM_FILE_PATCH
-	       "[-F FILE] "
-	       #endif // START_FROM_FILE_PATCH
-	       #if LIBCURL_PATCH
-	       "FILES / URLS...\n"
-	       #else
-	       "FILES...\n"
-	       #endif // LIBCURL_PATCH
+	printf("usage: sxiv [-abc"
+		#if DMENU_LIKE_BEHAVIOUR_PATCH
+		"d"
+		#endif // DMENU_LIKE_BEHAVIOUR_PATCH
+		"fhiopqrtvZ] [-A FRAMERATE] [-e WID] [-G GAMMA] "
+		"[-g GEOMETRY] [-N NAME] "
+		#if SET_WSET_WINDOW_TITLE_PATCH
+		"[-T TITLE] "
+		#endif // SET_WINDOW_TITLE_PATCH
+		"[-n NUM] [-S DELAY] [-s MODE] [-z ZOOM] "
+		#if START_FROM_FILE_PATCH
+		"[-F FILE] "
+		#endif // START_FROM_FILE_PATCH
+		#if LIBCURL_PATCH
+		"FILES / URLS...\n"
+		#else
+		"FILES...\n"
+		#endif // LIBCURL_PATCH
 	);
 }
 
@@ -67,6 +71,9 @@ void parse_options(int argc, char **argv)
 
 	_options.from_stdin = false;
 	_options.to_stdout = false;
+	#if DMENU_LIKE_BEHAVIOUR_PATCH
+	_options.like_dmenu = false;
+	#endif // DMENU_LIKE_BEHAVIOUR_PATCH
 	_options.recursive = false;
 	_options.startnum = 0;
 	#if START_START_FROM_FILE_PATCH
@@ -95,6 +102,9 @@ void parse_options(int argc, char **argv)
 	_options.private_mode = false;
 
 	while ((opt = getopt(argc, argv, "A:abce:fG:g:hin:N:opqrS:s:tvZz:"
+		#if DMENU_LIKE_BEHAVIOUR_PATCH
+		"d"
+		#endif // DMENU_LIKE_BEHAVIOUR_PATCH
 		#if SET_WINDOW_TITLE_PATCH
 		"T:"
 		#endif // SET_WINDOW_TITLE_PATCH
@@ -121,6 +131,11 @@ void parse_options(int argc, char **argv)
 			case 'c':
 				_options.clean_cache = true;
 				break;
+			#if DMENU_LIKE_BEHAVIOUR_PATCH
+			case 'd':
+				_options.like_dmenu = true;
+				break;
+			#endif // DMENU_LIKE_BEHAVIOUR_PATCH
 			case 'e':
 				n = strtol(optarg, &end, 0);
 				if (*end != '\0')

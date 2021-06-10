@@ -22,7 +22,8 @@ version and further details on sxiv, how to install it and how it works.
 ### Changelog:
 
 2021-06-10 - Added the "allow escape key in external key handler" patch (for the lack of a better
-             name), the navigate if not scroll, the start from file and the set title patches
+             name), dmenu-like behaviour, the navigate if not scroll, the start from file and the
+             set title patches
 
 2021-06-09 - Added the marks count, marks border, window title and swap bar colors patches
 
@@ -44,6 +45,10 @@ version and further details on sxiv, how to install it and how it works.
         things such as exiting the external key handler with no output
       - optionally this patch allows multiple inputs to be sent to the external key handler until
         it returns with an exit status of 1
+
+   - [dmenu-like-behaviour](https://github.com/muennich/sxiv/pull/405)
+      - adds dmenu-like behaviour for sxiv such that selecting an image and pressing enter will
+        exit sxiv and output the path to the currently selected file to standard out
 
    - [ewmh-net-wm-pid](https://github.com/muennich/sxiv/pull/403)
       - sets the \_NET\_WM\_PID X property

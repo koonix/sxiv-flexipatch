@@ -297,6 +297,9 @@ struct opt {
 	char **filenames;
 	bool from_stdin;
 	bool to_stdout;
+	#if DMENU_LIKE_BEHAVIOUR_PATCH
+	bool like_dmenu;
+	#endif // DMENU_LIKE_BEHAVIOUR_PATCH
 	bool recursive;
 	int filecnt;
 	int startnum;

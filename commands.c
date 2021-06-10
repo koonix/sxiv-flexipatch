@@ -65,8 +65,25 @@ bool cg_quit(arg_t _)
 	exit(EXIT_SUCCESS);
 }
 
+#if DMENU_LIKE_BEHAVIOUR_PATCH
+bool cg_switch_mode(arg_t ignore_d)
+#else
 bool cg_switch_mode(arg_t _)
+#endif // DMENU_LIKE_BEHAVIOUR_PATCH
 {
+	#if DMENU_LIKE_BEHAVIOUR_PATCH
+	if (options->like_dmenu && !ignore_d) {
+		if (markcnt > 0) {
+			for (int i = 0; i < filecnt; i++) {
+				if (files[i].flags & FF_MARK)
+					printf("%s\n", files[i].name);
+			}
+		} else
+			printf("%s\n", files[fileidx].name);
+		exit(EXIT_SUCCESS);
+	}
+	#endif // DMENU_LIKE_BEHAVIOUR_PATCH
+
 	if (mode == MODE_IMAGE) {
 		if (tns.thumbs == NULL)
 			tns_init(&tns, files, &filecnt, &fileidx, &win);

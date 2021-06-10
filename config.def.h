@@ -76,7 +76,12 @@ static const int THUMB_SIZE = 3;
 static const keymap_t keys[] = {
 	/* modifiers    key               function              argument */
 	{ 0,            XK_q,             g_quit,               None },
+	#if DMENU_LIKE_BEHAVIOUR_PATCH
+	{ 0,            XK_Return,        g_switch_mode,        0 },
+	{ ControlMask,  XK_Return,        g_switch_mode,        1 },
+	#else
 	{ 0,            XK_Return,        g_switch_mode,        None },
+	#endif // DMENU_LIKE_BEHAVIOUR_PATCH
 	{ 0,            XK_f,             g_toggle_fullscreen,  None },
 	{ 0,            XK_b,             g_toggle_bar,         None },
 	{ ControlMask,  XK_x,             g_prefix_external,    None },

@@ -24,6 +24,16 @@
  */
 #define ALLOW_ESCAPE_KEY_IN_EXTERNAL_KEY_HANDLER_PATCH 0
 
+/* Adds dmenu-like behaviour for sxiv such that selecting an image and pressing enter will exit
+ * sxiv and output the path to the currently selected file to standard out.
+ *
+ * This is enabled with the "-d" command line option and Ctrl+Enter will allow the mode to be
+ * changed to thumbnail mode and back.
+ *
+ * https://github.com/muennich/sxiv/pull/405
+ */
+#define DMENU_LIKE_BEHAVIOUR_PATCH 0
+
 /* Sets the _NET_WM_PID X property.
  *
  * Without this using tools like wmctrl -lp the PID for sxiv windows are displayed
