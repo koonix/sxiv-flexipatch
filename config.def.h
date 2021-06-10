@@ -168,4 +168,12 @@ static const button_t buttons[] = {
 	{ 0,            5,                g_zoom,               -1 },
 };
 
+#if ALLOW_ESCAPE_KEY_IN_EXTERNAL_KEY_HANDLER_PATCH
+/* If false, sxiv will send all key combos to the external keyhandler until the keyhandler
+ * returns 1 as its exit status.
+ * The example external keyhandler uses the escape key for this.
+ */
+static const bool one_extkeyhandler_cmd = true;
+#endif // ALLOW_ESCAPE_KEY_IN_EXTERNAL_KEY_HANDLER_PATCH
+
 #endif

@@ -7,6 +7,23 @@
  * relevant descriptions.
  */
 
+/* This patch removes redundant handling of the escape key allowing it to be used for other
+ * things such as exiting the external key handler with no output.
+ *
+ * Look at the scripts under exec/ which can be copied to your $XDG_CONFIG_HOME/sxiv/exec/
+ * directory. Now when using the keybinding of Ctrl+x the key-handler script is run and you
+ * can do Ctrl+g to open the image in gimp as an example.
+ *
+ * This example patch allows you to do Ctrl+x to trigger the external key handler, then hit
+ * the escape key to return with no output.
+ *
+ * Optionally this patch allows multiple inputs to be sent to the external key handler until
+ * it returns with an exit status of 1.
+ *
+ * https://github.com/muennich/sxiv/pull/428
+ */
+#define ALLOW_ESCAPE_KEY_IN_EXTERNAL_KEY_HANDLER_PATCH 0
+
 /* Sets the _NET_WM_PID X property.
  *
  * Without this using tools like wmctrl -lp the PID for sxiv windows are displayed

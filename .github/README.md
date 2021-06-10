@@ -21,6 +21,9 @@ version and further details on sxiv, how to install it and how it works.
 
 ### Changelog:
 
+2021-06-10 - Added the "allow escape key in external key handler" patch (for the lack of a better
+             name)
+
 2021-06-09 - Added the marks count, marks border, window title and swap bar colors patches
 
 2021-06-08 - Added the thumb paddings and the libcurl patches
@@ -35,6 +38,12 @@ version and further details on sxiv, how to install it and how it works.
 2021-04-08 - Added image-mode-cycle, square-thumbnails and window-fit-image patches
 
 ### Patches included:
+
+   - [allow-escape-key-in-external-key-handler](https://github.com/muennich/sxiv/pull/428)
+      - this patch removes redundant handling of the escape key allowing it to be used for other
+        things such as exiting the external key handler with no output
+      - optionally this patch allows multiple inputs to be sent to the external key handler until
+        it returns with an exit status of 1
 
    - [ewmh-net-wm-pid](https://github.com/muennich/sxiv/pull/403)
       - sets the \_NET\_WM\_PID X property
