@@ -288,7 +288,12 @@ void win_open(win_t *win)
 	}
 	free(icon_data);
 
-	#if !WINDOW_TITLE_PATCH
+	#if SET_WINDOW_TITLE_PATCH && WINDOW_TITLE_PATCH
+	if (options->title != NULL)
+		win_set_title(win, options->title);
+	#elif SET_WINDOW_TITLE_PATCH
+	win_set_title(win, options->title != NULL ? options->title : "sxiv");
+	#elif !WINDOW_TITLE_PATCH
 	win_set_title(win, "sxiv");
 	#endif // WINDOW_TITLE_PATCH
 
@@ -520,10 +525,16 @@ void win_draw_rect(win_t *win, int x, int y, int w, int h, bool fill, int lw,
 }
 
 #if WINDOW_TITLE_PATCH
-void win_set_title(win_t *win, const char *path)
+void win_set_dynamic_title(win_t *win, const char *path)
 {
 	char *title, *suffix="";
 	static bool first_time = true;
+
+	#if SET_WINDOW_TITLE_PATCH
+	/* Return if user has specified a window title via the command line. */
+	if (options->title != NULL)
+		return;
+	#endif // SET_WINDOW_TITLE_PATCH
 
 	/* Return if window is not ready yet, otherwise we get an X fault. */
 	if (win->xwin == None)
@@ -570,7 +581,8 @@ void win_set_title(win_t *win, const char *path)
 		first_time = false;
 	}
 }
-#else
+#endif // WINDOW_TITLE_PATCH
+
 void win_set_title(win_t *win, const char *title)
 {
 	XStoreName(win->env.dpy, win->xwin, title);
@@ -583,7 +595,6 @@ void win_set_title(win_t *win, const char *title)
 	                XInternAtom(win->env.dpy, "UTF8_STRING", False), 8,
 	                PropModeReplace, (unsigned char *) title, strlen(title));
 }
-#endif // WINDOW_TITLE_PATCH
 
 void win_set_cursor(win_t *win, cursor_t cursor)
 {

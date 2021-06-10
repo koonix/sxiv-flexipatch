@@ -575,7 +575,7 @@ bool tns_move_selection(tns_t *tns, direction_t dir, int cnt)
 			tns_highlight(tns, *tns->sel, true);
 	}
 	#if WINDOW_TITLE_PATCH
-	win_set_title(tns->win, tns->files[fileidx].path);
+	win_set_dynamic_title(tns->win, tns->files[fileidx].path);
 	#endif // WINDOW_TITLE_PATCH
 	return *tns->sel != old;
 }

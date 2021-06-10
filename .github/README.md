@@ -22,7 +22,7 @@ version and further details on sxiv, how to install it and how it works.
 ### Changelog:
 
 2021-06-10 - Added the "allow escape key in external key handler" patch (for the lack of a better
-             name)
+             name) and the set title patch
 
 2021-06-09 - Added the marks count, marks border, window title and swap bar colors patches
 
@@ -65,6 +65,9 @@ version and further details on sxiv, how to install it and how it works.
 
    - [scale-mode-fill](https://github.com/muennich/sxiv/pull/446)
       - adds fill scale mode
+
+   - [set-title](https://github.com/muennich/sxiv/pull/427)
+      - allows the window title to be set via a command line flag during runtime
 
    - [square-thumbnails](https://github.com/i-tsvetkov/sxiv-patches)
       - makes thumbnails square

@@ -74,6 +74,12 @@
  */
 #define SCALE_FILL_MODE_PATCH 0
 
+/* Allows the window title to be set via a command line flag during runtime. Also see
+ * the window title patch that sets the title dynamically. A set title will override that.
+ * https://github.com/muennich/sxiv/pull/427
+ */
+#define SET_WINDOW_TITLE_PATCH 0
+
 /* Makes thumbnails square.
  * https://github.com/i-tsvetkov/sxiv-patches
  */

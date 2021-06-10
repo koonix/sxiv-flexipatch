@@ -366,7 +366,7 @@ void load_image(int new)
 	open_info();
 	arl_setup(&arl, files[fileidx].path);
 	#if WINDOW_TITLE_PATCH
-	win_set_title(&win, files[fileidx].path);
+	win_set_dynamic_title(&win, files[fileidx].path);
 	#endif // WINDOW_TITLE_PATCH
 
 	if (img.multi.cnt > 0 && img.multi.animate)
@@ -1088,7 +1088,7 @@ int main(int argc, char **argv)
 
 	win_open(&win);
 	#if WINDOW_TITLE_PATCH
-	win_set_title(&win, files[fileidx].path);
+	win_set_dynamic_title(&win, files[fileidx].path);
 	#endif // WINDOW_TITLE_PATCH
 	win_set_cursor(&win, CURSOR_WATCH);
 

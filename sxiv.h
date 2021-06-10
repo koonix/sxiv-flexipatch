@@ -314,6 +314,9 @@ struct opt {
 	long embed;
 	char *geometry;
 	char *res_name;
+	#if SET_WINDOW_TITLE_PATCH
+	char *title;
+	#endif // SET_WINDOW_TITLE_PATCH
 
 	/* misc flags: */
 	bool quiet;
@@ -488,6 +491,9 @@ void win_clear(win_t*);
 void win_draw(win_t*);
 void win_draw_rect(win_t*, int, int, int, int, bool, int, unsigned long);
 void win_set_title(win_t*, const char*);
+#if WINDOW_TITLE_PATCH
+void win_set_dynamic_title(win_t *win, const char *path);
+#endif // WINDOW_TITLE_PATCH
 void win_set_cursor(win_t*, cursor_t);
 void win_cursor_pos(win_t*, int*, int*);
 

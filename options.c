@@ -31,7 +31,11 @@ const opt_t *options = (const opt_t*) &_options;
 void print_usage(void)
 {
 	printf("usage: sxiv [-abcfhiopqrtvZ] [-A FRAMERATE] [-e WID] [-G GAMMA] "
-	       "[-g GEOMETRY] [-N NAME] [-n NUM] [-S DELAY] [-s MODE] [-z ZOOM] "
+	       "[-g GEOMETRY] [-N NAME] "
+	       #if SET_WSET_WINDOW_TITLE_PATCH
+	       "[-T TITLE] "
+	       #endif // SET_WINDOW_TITLE_PATCH
+	       "[-n NUM] [-S DELAY] [-s MODE] [-z ZOOM] "
 	       #if LIBCURL_PATCH
 	       "FILES / URLS...\n"
 	       #else
@@ -75,13 +79,20 @@ void parse_options(int argc, char **argv)
 	_options.hide_bar = false;
 	_options.geometry = NULL;
 	_options.res_name = NULL;
+	#if SET_WINDOW_TITLE_PATCH
+	_options.title = NULL;
+	#endif // SET_WINDOW_TITLE_PATCH
 
 	_options.quiet = false;
 	_options.thumb_mode = false;
 	_options.clean_cache = false;
 	_options.private_mode = false;
 
-	while ((opt = getopt(argc, argv, "A:abce:fG:g:hin:N:opqrS:s:tvZz:")) != -1) {
+	while ((opt = getopt(argc, argv, "A:abce:fG:g:hin:N:opqrS:s:t"
+		#if SET_WINDOW_TITLE_PATCH
+		"T:"
+		#endif // SET_WINDOW_TITLE_PATCH
+		"vZz:")) != -1) {
 		switch (opt) {
 			case '?':
 				print_usage();
@@ -158,6 +169,11 @@ void parse_options(int argc, char **argv)
 					error(EXIT_FAILURE, 0, "Invalid argument for option -s: %s", optarg);
 				_options.scalemode = s - scalemodes;
 				break;
+			#if SET_WINDOW_TITLE_PATCH
+			case 'T':
+				_options.title = optarg;
+				break;
+			#endif // SET_WINDOW_TITLE_PATCH
 			case 't':
 				_options.thumb_mode = true;
 				break;
