@@ -102,6 +102,9 @@ void win_init(win_t *win)
 	#if MARK_BORDER_PATCH
 	const char *mk;
 	#endif // MARK_BORDER_PATCH
+	#if SEPARATE_BAR_COLORS_PATCH
+	const char *barbg, *barfg;
+	#endif // SEPARATE_BAR_COLORS_PATCH
 	char *res_man;
 	XrmDatabase db;
 
@@ -136,12 +139,20 @@ void win_init(win_t *win)
 
 	bg = win_res(db, RES_CLASS ".background", "white");
 	fg = win_res(db, RES_CLASS ".foreground", "black");
+	win_alloc_color(e, bg, &win->bg);
+	win_alloc_color(e, fg, &win->fg);
 	#if MARK_BORDER_PATCH
 	mk = win_res(db, RES_CLASS ".mark", "orange");
 	win_alloc_color(e, mk, &win->mark);
 	#endif // MARK_BORDER_PATCH
-	win_alloc_color(e, bg, &win->bg);
-	win_alloc_color(e, fg, &win->fg);
+	#if SEPARATE_BAR_COLORS_PATCH
+	barbg = win_res(db, RES_CLASS ".barbackground", NULL);
+	barfg = win_res(db, RES_CLASS ".barforeground", NULL);
+	fprintf(stderr, "barbg = %d\n", barbg);
+	fprintf(stderr, "barfg = %d\n", barfg);
+	win_alloc_color(e, barbg ? barbg : fg, &win->barbg);
+	win_alloc_color(e, barfg ? barfg : bg, &win->barfg);
+	#endif // SEPARATE_BAR_COLORS_PATCH
 
 	win->bar.l.size = BAR_L_LEN;
 	win->bar.r.size = BAR_R_LEN;
@@ -461,7 +472,9 @@ void win_draw_bar(win_t *win)
 	d = XftDrawCreate(e->dpy, win->buf.pm, DefaultVisual(e->dpy, e->scr),
 	                  DefaultColormap(e->dpy, e->scr));
 
-	#if SWAP_BAR_COLORS_PATCH
+	#if SEPARATE_BAR_COLORS_PATCH
+	XSetForeground(e->dpy, gc, win->barbg.pixel);
+	#elif SWAP_BAR_COLORS_PATCH
 	XSetForeground(e->dpy, gc, win->bg.pixel);
 	#else
 	XSetForeground(e->dpy, gc, win->fg.pixel);
@@ -481,7 +494,9 @@ void win_draw_bar(win_t *win)
 			return;
 		x = win->w - tw - H_TEXT_PAD;
 		w -= tw;
-		#if SWAP_BAR_COLORS_PATCH
+		#if SEPARATE_BAR_COLORS_PATCH
+		win_draw_text(win, d, &win->barfg, x, y, r->buf, len, tw);
+		#elif SWAP_BAR_COLORS_PATCH
 		win_draw_text(win, d, &win->fg, x, y, r->buf, len, tw);
 		#else
 		win_draw_text(win, d, &win->bg, x, y, r->buf, len, tw);
@@ -490,7 +505,9 @@ void win_draw_bar(win_t *win)
 	if ((len = strlen(l->buf)) > 0) {
 		x = H_TEXT_PAD;
 		w -= 2 * H_TEXT_PAD; /* gap between left and right parts */
-		#if SWAP_BAR_COLORS_PATCH
+		#if SEPARATE_BAR_COLORS_PATCH
+		win_draw_text(win, d, &win->barfg, x, y, l->buf, len, w);
+		#elif SWAP_BAR_COLORS_PATCH
 		win_draw_text(win, d, &win->fg, x, y, l->buf, len, w);
 		#else
 		win_draw_text(win, d, &win->bg, x, y, l->buf, len, w);

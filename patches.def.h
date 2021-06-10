@@ -89,6 +89,16 @@
  */
 #define SCALE_FILL_MODE_PATCH 0
 
+/* Adds the option of having separate colors for the bar in thumbnail view (instead of re-using
+ * the foreground and background colors).
+ *
+ * You can set the bar specific colors by setting Sxiv.barforeground and Sxiv.barbackground
+ * in your .Xresources file.
+
+ * https://github.com/muennich/sxiv/pull/386
+ */
+#define SEPARATE_BAR_COLORS_PATCH 0
+
 /* Allows the window title to be set via a command line flag during runtime. Also see
  * the window title patch that sets the title dynamically. A set title will override that.
  * https://github.com/muennich/sxiv/pull/427

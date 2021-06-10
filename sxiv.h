@@ -460,6 +460,10 @@ struct win {
 	#if MARK_BORDER_PATCH
 	XftColor mark;
 	#endif // MARK_BORDER_PATCH
+	#if SEPARATE_BAR_COLORS_PATCH
+	XftColor barbg;
+	XftColor barfg;
+	#endif // SEPARATE_BAR_COLORS_PATCH
 
 	#if WINDOW_TITLE_PATCH
 	suffixmode_t suffixmode;

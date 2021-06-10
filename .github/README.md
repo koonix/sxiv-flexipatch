@@ -22,8 +22,8 @@ version and further details on sxiv, how to install it and how it works.
 ### Changelog:
 
 2021-06-10 - Added the "allow escape key in external key handler" patch (for the lack of a better
-             name), dmenu-like behaviour, the navigate if not scroll, the start from file and the
-             set title patches
+             name), dmenu-like behaviour, the navigate if not scroll, the start from file, the
+             set title and separate bar colors patches
 
 2021-06-09 - Added the marks count, marks border, window title and swap bar colors patches
 
@@ -74,6 +74,9 @@ version and further details on sxiv, how to install it and how it works.
 
    - [scale-mode-fill](https://github.com/muennich/sxiv/pull/446)
       - adds fill scale mode
+
+   - [separate-bar-colors](https://github.com/muennich/sxiv/pull/386)
+      - adds the option of having separate colors for the bar in thumbnail view
 
    - [set-title](https://github.com/muennich/sxiv/pull/427)
       - allows the window title to be set via a command line flag during runtime
