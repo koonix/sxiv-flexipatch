@@ -354,6 +354,22 @@ bool ci_scroll_to_edge(arg_t dir)
 	return img_pan_edge(&img, dir);
 }
 
+#if NAVIGATE_IF_NOT_SCROLL_PATCH
+bool ci_scroll_or_navigate(arg_t dir)
+{
+	if (img_zoom_diff(&img, NULL) >= 0) {
+		arg_t n;
+		switch (dir) {
+			case DIR_LEFT:  n = -1; break;
+			case DIR_RIGHT: n =  1; break;
+			default:        n =  0; break;
+		}
+		return ci_navigate(n);
+	} else
+		return ci_scroll(dir);
+}
+#endif // NAVIGATE_IF_NOT_SCROLL_PATCH
+
 bool ci_drag(arg_t mode)
 {
 	int x, y, ox, oy;

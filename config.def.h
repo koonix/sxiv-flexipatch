@@ -128,6 +128,16 @@ static const keymap_t keys[] = {
 	{ ControlMask,  XK_n,             i_navigate_frame,     +1 },
 	{ ControlMask,  XK_p,             i_navigate_frame,     -1 },
 	{ ControlMask,  XK_space,         i_toggle_animation,   None },
+	#if NAVIGATE_IF_NOT_SCROLL_PATCH
+	{ 0,            XK_h,             i_scroll_or_navigate, DIR_LEFT },
+	{ 0,            XK_Left,          i_scroll_or_navigate, DIR_LEFT },
+	{ 0,            XK_j,             i_scroll_or_navigate, DIR_DOWN },
+	{ 0,            XK_Down,          i_scroll_or_navigate, DIR_DOWN },
+	{ 0,            XK_k,             i_scroll_or_navigate, DIR_UP },
+	{ 0,            XK_Up,            i_scroll_or_navigate, DIR_UP },
+	{ 0,            XK_l,             i_scroll_or_navigate, DIR_RIGHT },
+	{ 0,            XK_Right,         i_scroll_or_navigate, DIR_RIGHT },
+	#else
 	{ 0,            XK_h,             i_scroll,             DIR_LEFT },
 	{ 0,            XK_Left,          i_scroll,             DIR_LEFT },
 	{ 0,            XK_j,             i_scroll,             DIR_DOWN },
@@ -136,6 +146,7 @@ static const keymap_t keys[] = {
 	{ 0,            XK_Up,            i_scroll,             DIR_UP },
 	{ 0,            XK_l,             i_scroll,             DIR_RIGHT },
 	{ 0,            XK_Right,         i_scroll,             DIR_RIGHT },
+	#endif // NAVIGATE_IF_NOT_SCROLL_PATCH
 	{ 0,            XK_H,             i_scroll_to_edge,     DIR_LEFT },
 	{ 0,            XK_J,             i_scroll_to_edge,     DIR_DOWN },
 	{ 0,            XK_K,             i_scroll_to_edge,     DIR_UP },

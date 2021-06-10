@@ -22,7 +22,7 @@ version and further details on sxiv, how to install it and how it works.
 ### Changelog:
 
 2021-06-10 - Added the "allow escape key in external key handler" patch (for the lack of a better
-             name), the start from file and the set title patch
+             name), the navigate if not scroll, the start from file and the set title patches
 
 2021-06-09 - Added the marks count, marks border, window title and swap bar colors patches
 
@@ -62,6 +62,10 @@ version and further details on sxiv, how to install it and how it works.
 
    - [marks-count](https://github.com/muennich/sxiv/issues/294)
       - shows the number of marked files in the thumbnail view
+
+   - [navigate-if-not-scroll](https://github.com/muennich/sxiv/pull/368)
+      - allows for the same keys used to scroll to be re-used for navigation if the image is not
+        zoomed
 
    - [scale-mode-fill](https://github.com/muennich/sxiv/pull/446)
       - adds fill scale mode
