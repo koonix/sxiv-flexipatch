@@ -299,6 +299,9 @@ struct opt {
 	bool recursive;
 	int filecnt;
 	int startnum;
+	#if START_FROM_FILE_PATCH
+	char *startfile;
+	#endif // START_FROM_FILE_PATCH
 
 	/* image: */
 	scalemode_t scalemode;

@@ -36,6 +36,9 @@ void print_usage(void)
 	       "[-T TITLE] "
 	       #endif // SET_WINDOW_TITLE_PATCH
 	       "[-n NUM] [-S DELAY] [-s MODE] [-z ZOOM] "
+	       #if START_FROM_FILE_PATCH
+	       "[-F FILE] "
+	       #endif // START_FROM_FILE_PATCH
 	       #if LIBCURL_PATCH
 	       "FILES / URLS...\n"
 	       #else
@@ -66,6 +69,9 @@ void parse_options(int argc, char **argv)
 	_options.to_stdout = false;
 	_options.recursive = false;
 	_options.startnum = 0;
+	#if START_START_FROM_FILE_PATCH
+	_options.startfile = NULL;
+	#endif // START_START_FROM_FILE_PATCH
 
 	_options.scalemode = SCALE_DOWN;
 	_options.zoom = 1.0;
@@ -88,11 +94,14 @@ void parse_options(int argc, char **argv)
 	_options.clean_cache = false;
 	_options.private_mode = false;
 
-	while ((opt = getopt(argc, argv, "A:abce:fG:g:hin:N:opqrS:s:t"
+	while ((opt = getopt(argc, argv, "A:abce:fG:g:hin:N:opqrS:s:tvZz:"
 		#if SET_WINDOW_TITLE_PATCH
 		"T:"
 		#endif // SET_WINDOW_TITLE_PATCH
-		"vZz:")) != -1) {
+		#if START_FROM_FILE_PATCH
+		"F:"
+		#endif // START_FROM_FILE_PATCH
+		)) != -1) {
 		switch (opt) {
 			case '?':
 				print_usage();
@@ -142,6 +151,11 @@ void parse_options(int argc, char **argv)
 					error(EXIT_FAILURE, 0, "Invalid argument for option -n: %s", optarg);
 				_options.startnum = n - 1;
 				break;
+			#if START_FROM_FILE_PATCH
+			case 'F':
+				_options.startfile = optarg;
+				break;
+			#endif // START_FROM_FILE_PATCH
 			case 'N':
 				_options.res_name = optarg;
 				break;
