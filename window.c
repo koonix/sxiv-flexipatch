@@ -148,10 +148,13 @@ void win_init(win_t *win)
 	#if SEPARATE_BAR_COLORS_PATCH
 	barbg = win_res(db, RES_CLASS ".barbackground", NULL);
 	barfg = win_res(db, RES_CLASS ".barforeground", NULL);
-	fprintf(stderr, "barbg = %d\n", barbg);
-	fprintf(stderr, "barfg = %d\n", barfg);
+	#if SWAP_BAR_COLORS_PATCH
+	win_alloc_color(e, barbg ? barbg : bg, &win->barbg);
+	win_alloc_color(e, barfg ? barfg : fg, &win->barfg);
+	#else
 	win_alloc_color(e, barbg ? barbg : fg, &win->barbg);
 	win_alloc_color(e, barfg ? barfg : bg, &win->barfg);
+	#endif // SWAP_BAR_COLORS_PATCH
 	#endif // SEPARATE_BAR_COLORS_PATCH
 
 	win->bar.l.size = BAR_L_LEN;
