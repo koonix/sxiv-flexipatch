@@ -70,8 +70,15 @@ void win_init_font(const win_env_t *e, const char *fontstr)
 
 void win_alloc_color(const win_env_t *e, const char *name, XftColor *col)
 {
-	if (!XftColorAllocName(e->dpy, DefaultVisual(e->dpy, e->scr),
-	                       DefaultColormap(e->dpy, e->scr), name, col))
+	if (!XftColorAllocName(e->dpy,
+		#if ALPHA_PATCH
+		e->vis,
+		e->cmap,
+		#else
+		DefaultVisual(e->dpy, e->scr),
+		DefaultColormap(e->dpy),
+		#endif // ALPHA_PATCH
+		name, col))
 	{
 		error(EXIT_FAILURE, 0, "Error allocating color '%s'", name);
 	}
@@ -107,6 +114,11 @@ void win_init(win_t *win)
 	#endif // SEPARATE_BAR_COLORS_PATCH
 	char *res_man;
 	XrmDatabase db;
+	#if ALPHA_PATCH
+	XVisualInfo vis;
+	XWindowAttributes attr;
+	Window parent;
+	#endif // ALPHA_PATCH
 
 	memset(win, 0, sizeof(win_t));
 
@@ -117,9 +129,24 @@ void win_init(win_t *win)
 	e->scr = DefaultScreen(e->dpy);
 	e->scrw = DisplayWidth(e->dpy, e->scr);
 	e->scrh = DisplayHeight(e->dpy, e->scr);
+	#if ALPHA_PATCH
+	parent = options->embed != 0 ? options->embed : RootWindow(e->dpy, e->scr);
+
+	if (options->embed == 0) {
+		e->depth = DefaultDepth(e->dpy, e->scr);
+	} else {
+		XGetWindowAttributes(e->dpy, parent, &attr);
+		e->depth = attr.depth;
+	}
+
+	XMatchVisualInfo(e->dpy, e->scr, e->depth, TrueColor, &vis);
+	e->vis = vis.visual;
+	e->cmap = XCreateColormap(e->dpy, parent, e->vis, None);
+	#else
 	e->vis = DefaultVisual(e->dpy, e->scr);
 	e->cmap = DefaultColormap(e->dpy, e->scr);
 	e->depth = DefaultDepth(e->dpy, e->scr);
+	#endif // ALPHA_PATCH
 
 	if (setlocale(LC_CTYPE, "") == NULL || XSupportsLocale() == 0)
 		error(0, 0, "No locale support");
@@ -273,8 +300,13 @@ void win_open(win_t *win)
 		if (i != CURSOR_NONE)
 			cursors[i].icon = XCreateFontCursor(e->dpy, cursors[i].name);
 	}
-	if (XAllocNamedColor(e->dpy, DefaultColormap(e->dpy, e->scr), "black",
-	                     &col, &col) == 0)
+	if (XAllocNamedColor(e->dpy,
+		#if ALPHA_PATCH
+		e->cmap,
+		#else
+		DefaultColormap(e->dpy, e->scr),
+		#endif // ALPHA_PATCH
+		"black", &col, &col) == 0)
 	{
 		error(EXIT_FAILURE, 0, "Error allocating color 'black'");
 	}
@@ -472,8 +504,15 @@ void win_draw_bar(win_t *win)
 	e = &win->env;
 	y = win->h + font->ascent + V_TEXT_PAD;
 	w = win->w - 2*H_TEXT_PAD;
-	d = XftDrawCreate(e->dpy, win->buf.pm, DefaultVisual(e->dpy, e->scr),
-	                  DefaultColormap(e->dpy, e->scr));
+	d = XftDrawCreate(e->dpy, win->buf.pm,
+		#if ALPHA_PATCH
+		e->vis,
+		e->cmap
+		#else
+		DefaultVisual(e->dpy, e->scr),
+		DefaultColormap(e->dpy, e->scr)
+		#endif // ALPHA_PATCH
+	);
 
 	#if SEPARATE_BAR_COLORS_PATCH
 	XSetForeground(e->dpy, gc, win->barbg.pixel);

@@ -15,6 +15,9 @@ HAVE_GIFLIB = 1
 # enable features requiring libexif (-lexif)
 HAVE_LIBEXIF = 1
 
+# Uncomment to enable the alpha patch / ALPHA_PATCH
+#xrender = -lXrender
+
 # Uncomment to enable SVG support / SVG_IMAGE_SUPPORT_PATCH
 #svglibs = `pkg-config --cflags --libs librsvg-2.0 cairo`
 
@@ -35,7 +38,7 @@ lib_exif_1 = -lexif
 lib_gif_0 =
 lib_gif_1 = -lgif
 ldlibs = $(LDLIBS) -lImlib2 -lX11 -lXft -lfontconfig \
-  $(lib_exif_$(HAVE_LIBEXIF)) $(lib_gif_$(HAVE_GIFLIB)) $(webplibs) $(curllibs)
+  $(lib_exif_$(HAVE_LIBEXIF)) $(lib_gif_$(HAVE_GIFLIB)) $(webplibs) $(curllibs) $(xrender)
 
 objs = autoreload_$(AUTORELOAD).o commands.o image.o main.o options.o \
   thumbs.o util.o window.o $(curlobjs)

@@ -815,7 +815,11 @@ void img_render(img_t *img)
 		if ((bg = imlib_create_image(dw, dh)) == NULL)
 			error(EXIT_FAILURE, ENOMEM, NULL);
 		imlib_context_set_image(bg);
+		#if ALPHA_PATCH
+		imlib_image_set_has_alpha(1);
+		#else
 		imlib_image_set_has_alpha(0);
+		#endif // ALPHA_PATCH
 
 		if (img->alpha) {
 			int i, c, r;
@@ -843,6 +847,9 @@ void img_render(img_t *img)
 		imlib_free_image();
 		imlib_context_set_color_modifier(img->cmod);
 	} else {
+		#if ALPHA_PATCH
+		imlib_image_set_has_alpha(1);
+		#endif // ALPHA_PATCH
 		imlib_render_image_part_on_drawable_at_size(sx, sy, sw, sh, dx, dy, dw, dh);
 	}
 	img->dirty = false;

@@ -24,6 +24,19 @@
  */
 #define ALLOW_ESCAPE_KEY_IN_EXTERNAL_KEY_HANDLER_PATCH 0
 
+/* Adds alpha support not for transparency, but to allow sxiv to be embedded into applications
+ * that expects support it (e.g. tabbed with alpha patch).
+ *
+ * This patch depends on the following libraries:
+ *    - Xrender
+ *
+ * Remember to uncomment the relevant lines in the Makefile when enabling this patch.
+ *
+ * https://github.com/muennich/sxiv/issues/342
+ * https://github.com/jaredforrest/sxiv/commit/49bb193074f92ebe05f165c091256e9f07c56e5f
+ */
+#define ALPHA_PATCH 0
+
 /* Adds dmenu-like behaviour for sxiv such that selecting an image and pressing enter will exit
  * sxiv and output the path to the currently selected file to standard out.
  *

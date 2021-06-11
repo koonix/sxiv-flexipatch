@@ -21,6 +21,8 @@ version and further details on sxiv, how to install it and how it works.
 
 ### Changelog:
 
+2021-06-11 - Added the alpha patch
+
 2021-06-10 - Added the "allow escape key in external key handler" patch (for the lack of a better
              name), dmenu-like behaviour, the navigate if not scroll, the start from file, the
              set title and separate bar colors patches
@@ -45,6 +47,10 @@ version and further details on sxiv, how to install it and how it works.
         things such as exiting the external key handler with no output
       - optionally this patch allows multiple inputs to be sent to the external key handler until
         it returns with an exit status of 1
+
+   - [alpha](https://github.com/jaredforrest/sxiv/commit/49bb193074f92ebe05f165c091256e9f07c56e5f)
+      - the alpha patch allows sxiv to be embedded into applications that expects it, e.g.
+        tabbed with alpha patch applied
 
    - [dmenu-like-behaviour](https://github.com/muennich/sxiv/pull/405)
       - adds dmenu-like behaviour for sxiv such that selecting an image and pressing enter will
