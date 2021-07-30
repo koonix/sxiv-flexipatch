@@ -76,7 +76,7 @@ void win_alloc_color(const win_env_t *e, const char *name, XftColor *col)
 		e->cmap,
 		#else
 		DefaultVisual(e->dpy, e->scr),
-		DefaultColormap(e->dpy),
+		DefaultColormap(e->dpy, e->scr),
 		#endif // ALPHA_PATCH
 		name, col))
 	{
