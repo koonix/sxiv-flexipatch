@@ -60,6 +60,12 @@ enum {
 /* thumbnail sizes in pixels (width == height): */
 static const int thumb_sizes[] = { 32, 64, 96, 128, 160 };
 
+#if THUMBS_PADDING_PATCH
+const int THUMB_BORDERS[] = { 2, 2, 2, 2, 2 };
+const int THUMB_MARGIN = -1;
+const int THUMB_PADDING = 2;
+#endif // THUMBS_PADDING_PATCH
+
 /* thumbnail size at startup, index into thumb_sizes[]: */
 static const int THUMB_SIZE = 3;
 
@@ -70,7 +76,12 @@ static const int THUMB_SIZE = 3;
 static const keymap_t keys[] = {
 	/* modifiers    key               function              argument */
 	{ 0,            XK_q,             g_quit,               None },
+	#if DMENU_LIKE_BEHAVIOUR_PATCH
+	{ 0,            XK_Return,        g_switch_mode,        0 },
+	{ ControlMask,  XK_Return,        g_switch_mode,        1 },
+	#else
 	{ 0,            XK_Return,        g_switch_mode,        None },
+	#endif // DMENU_LIKE_BEHAVIOUR_PATCH
 	{ ControlMask,  XK_f,             g_toggle_fullscreen,  None },
 	{ 0,            XK_b,             g_toggle_bar,         None },
 	{ ControlMask,  XK_x,             g_prefix_external,    None },
@@ -111,6 +122,16 @@ static const keymap_t keys[] = {
 	{ 0,            XK_BackSpace,     i_navigate,           -1 },
 	{ ControlMask,  XK_6,             i_alternate,          None },
 	{ ControlMask,  XK_space,         i_toggle_animation,   None },
+	#if NAVIGATE_IF_NOT_SCROLL_PATCH
+	{ 0,            XK_h,             i_scroll_or_navigate, DIR_LEFT },
+	{ 0,            XK_Left,          i_scroll_or_navigate, DIR_LEFT },
+	{ 0,            XK_j,             i_scroll_or_navigate, DIR_DOWN },
+	{ 0,            XK_Down,          i_scroll_or_navigate, DIR_DOWN },
+	{ 0,            XK_k,             i_scroll_or_navigate, DIR_UP },
+	{ 0,            XK_Up,            i_scroll_or_navigate, DIR_UP },
+	{ 0,            XK_l,             i_scroll_or_navigate, DIR_RIGHT },
+	{ 0,            XK_Right,         i_scroll_or_navigate, DIR_RIGHT },
+	#else
 	{ 0,            XK_h,             i_scroll,             DIR_LEFT },
 	{ 0,            XK_Left,          i_scroll,             DIR_LEFT },
 	{ 0,            XK_j,             i_scroll,             DIR_DOWN },
@@ -119,6 +140,7 @@ static const keymap_t keys[] = {
 	{ 0,            XK_Up,            i_scroll,             DIR_UP },
 	{ 0,            XK_l,             i_scroll,             DIR_RIGHT },
 	{ 0,            XK_Right,         i_scroll,             DIR_RIGHT },
+	#endif // NAVIGATE_IF_NOT_SCROLL_PATCH
 	{ 0,            XK_J,             g_zoom,               -1 },
 	{ 0,            XK_K,             g_zoom,               +1 },
 	{ 0,            XK_f,             i_set_zoom,           100 },
@@ -147,5 +169,13 @@ static const button_t buttons[] = {
 	{ 0,            4,                g_zoom,               +1 },
 	{ 0,            5,                g_zoom,               -1 },
 };
+
+#if ALLOW_ESCAPE_KEY_IN_EXTERNAL_KEY_HANDLER_PATCH
+/* If false, sxiv will send all key combos to the external keyhandler until the keyhandler
+ * returns 1 as its exit status.
+ * The example external keyhandler uses the escape key for this.
+ */
+static const bool one_extkeyhandler_cmd = true;
+#endif // ALLOW_ESCAPE_KEY_IN_EXTERNAL_KEY_HANDLER_PATCH
 
 #endif
