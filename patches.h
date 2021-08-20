@@ -79,7 +79,7 @@
  *
  * https://github.com/explosion-mental/sxiv/blob/main/patches/libcurl.patch
  */
-#define LIBCURL_PATCH 1
+#define LIBCURL_PATCH 0
 
 /* Shows marked files with a separate colored border in the thumbnail view.
  * The color can be specified by adding Sxiv.mark in your .Xresources file.
