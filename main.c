@@ -25,6 +25,9 @@
 #if WINDOW_FIT_IMAGE_PATCH
 #undef _WINDOW_CONFIG
 #endif // WINDOW_FIT_IMAGE_PATCH
+#if LIBCURL_PATCH
+#include "url.h"
+#endif // LIBCURL_PATCH
 
 #include <stdlib.h>
 #include <string.h>
@@ -64,6 +67,10 @@ int filecnt, fileidx;
 int alternate;
 int markcnt;
 int markidx;
+#if LIBCURL_PATCH
+char **rmfiles;
+int rmcnt, rmidx;
+#endif // LIBCURL_PATCH
 
 int prefix;
 bool extprefix;
@@ -99,15 +106,29 @@ cursor_t imgcursor[3] = {
 	CURSOR_ARROW, CURSOR_ARROW, CURSOR_ARROW
 };
 
+#if LIBCURL_PATCH
+CLEANUP void tmp_unlink(char **rmfiles, int n) {
+	while (n--)
+		unlink(rmfiles[n]);
+}
+#endif // LIBCURL_PATCH
+
 void cleanup(void)
 {
+	#if LIBCURL_PATCH
+	tmp_unlink(rmfiles, rmidx);
+	#endif // LIBCURL_PATCH
 	img_close(&img, false);
 	arl_cleanup(&arl);
 	tns_free(&tns);
 	win_close(&win);
 }
 
+#if LIBCURL_PATCH
+void internal_check_add_file(char *filename, char *url, bool given)
+#else
 void check_add_file(char *filename, bool given)
+#endif // LIBCURL_PATCH
 {
 	char *path;
 
@@ -130,10 +151,34 @@ void check_add_file(char *filename, bool given)
 
 	files[fileidx].name = estrdup(filename);
 	files[fileidx].path = path;
+	#if LIBCURL_PATCH
+	if (url != NULL)
+	{
+		files[fileidx].url = estrdup(url);
+		if (rmidx == rmcnt) {
+			rmcnt *= 2;
+			rmfiles = erealloc(rmfiles, rmcnt * sizeof(char*));
+			memset(&rmfiles[rmcnt/2], 0, rmcnt/2 * sizeof(char*));
+		}
+		rmfiles[rmidx++] = path;
+	}
+	#endif // LIBCURL_PATCH
 	if (given)
 		files[fileidx].flags |= FF_WARN;
 	fileidx++;
 }
+
+#if LIBCURL_PATCH
+void check_add_file(char *filename, bool given)
+{
+	internal_check_add_file(filename, NULL, given);
+}
+
+void check_add_url(char *filename, char *url, bool given)
+{
+	internal_check_add_file(filename, url, given);
+}
+#endif // LIBCURL_PATCH
 
 void remove_file(int n, bool manual)
 {
@@ -320,6 +365,9 @@ void load_image(int new)
 	close_info();
 	open_info();
 	arl_setup(&arl, files[fileidx].path);
+	#if WINDOW_TITLE_PATCH
+	win_set_dynamic_title(&win, files[fileidx].path);
+	#endif // WINDOW_TITLE_PATCH
 
 	if (img.multi.cnt > 0 && img.multi.animate)
 		set_timeout(animate, img.multi.frames[img.multi.sel].delay, true);
@@ -371,9 +419,17 @@ void update_info(void)
 			bar_put(l, "Loading... %0*d", fw, tns.loadnext + 1);
 		else if (tns.initnext < filecnt)
 			bar_put(l, "Caching... %0*d", fw, tns.initnext + 1);
+		#if LIBCURL_PATCH
+		else if (files[fileidx].url != NULL)
+			strncpy(l->buf, files[fileidx].url, l->size);
+		#endif // LIBCURL_PATCH
 		else
 			strncpy(l->buf, files[fileidx].name, l->size);
+		#if MARK_COUNT_PATCH
+		bar_put(r, "%s%d %0*d/%d", mark, markcnt, fw, fileidx + 1, filecnt);
+		#else
 		bar_put(r, "%s%0*d/%d", mark, fw, fileidx + 1, filecnt);
+		#endif // MARK_COUNT_PATCH
 	} else {
 		bar_put(r, "%s", mark);
 		if (img.ss.on) {
@@ -390,8 +446,14 @@ void update_info(void)
 			bar_put(r, "%0*d/%d" BAR_SEP, fn, img.multi.sel + 1, img.multi.cnt);
 		}
 		bar_put(r, "%0*d/%d", fw, fileidx + 1, filecnt);
-		if (info.f.err)
+		if (info.f.err) {
+			#if LIBCURL_PATCH
+			if (files[fileidx].url != NULL)
+				strncpy(l->buf, files[fileidx].url, l->size);
+			else
+			#endif // LIBCURL_PATCH
 			strncpy(l->buf, files[fileidx].name, l->size);
+		}
 	}
 }
 
@@ -474,7 +536,11 @@ Bool is_input_ev(Display *dpy, XEvent *ev, XPointer arg)
 	return ev->type == ButtonPress || ev->type == KeyPress;
 }
 
+#if ALLOW_ESCAPE_KEY_IN_EXTERNAL_KEY_HANDLER_PATCH
+int run_key_handler(const char *key, unsigned int mask)
+#else
 void run_key_handler(const char *key, unsigned int mask)
+#endif // ALLOW_ESCAPE_KEY_IN_EXTERNAL_KEY_HANDLER_PATCH
 {
 	pid_t pid;
 	FILE *pfs;
@@ -485,25 +551,44 @@ void run_key_handler(const char *key, unsigned int mask)
 	char kstr[32];
 	struct stat *oldst, st;
 	XEvent dump;
+	#if ALLOW_ESCAPE_KEY_IN_EXTERNAL_KEY_HANDLER_PATCH
+	int status;
+	#endif // ALLOW_ESCAPE_KEY_IN_EXTERNAL_KEY_HANDLER_PATCH
 
 	if (keyhandler.f.err != 0) {
 		if (!keyhandler.warned) {
 			error(0, keyhandler.f.err, "%s", keyhandler.f.cmd);
 			keyhandler.warned = true;
 		}
+		#if ALLOW_ESCAPE_KEY_IN_EXTERNAL_KEY_HANDLER_PATCH
+		return 1;
+		#else
 		return;
+		#endif // ALLOW_ESCAPE_KEY_IN_EXTERNAL_KEY_HANDLER_PATCH
 	}
 	if (key == NULL)
+		#if ALLOW_ESCAPE_KEY_IN_EXTERNAL_KEY_HANDLER_PATCH
+		return 1;
+		#else
 		return;
+		#endif // ALLOW_ESCAPE_KEY_IN_EXTERNAL_KEY_HANDLER_PATCH
 
 	if (pipe(pfd) < 0) {
 		error(0, errno, "pipe");
+		#if ALLOW_ESCAPE_KEY_IN_EXTERNAL_KEY_HANDLER_PATCH
+		return 1;
+		#else
 		return;
+		#endif // ALLOW_ESCAPE_KEY_IN_EXTERNAL_KEY_HANDLER_PATCH
 	}
 	if ((pfs = fdopen(pfd[1], "w")) == NULL) {
 		error(0, errno, "open pipe");
 		close(pfd[0]), close(pfd[1]);
+		#if ALLOW_ESCAPE_KEY_IN_EXTERNAL_KEY_HANDLER_PATCH
+		return 1;
+		#else
 		return;
+		#endif // ALLOW_ESCAPE_KEY_IN_EXTERNAL_KEY_HANDLER_PATCH
 	}
 	oldst = emalloc(fcnt * sizeof(*oldst));
 
@@ -538,7 +623,11 @@ void run_key_handler(const char *key, unsigned int mask)
 		}
 	}
 	fclose(pfs);
+	#if ALLOW_ESCAPE_KEY_IN_EXTERNAL_KEY_HANDLER_PATCH
+	while (waitpid(pid, &status, 0) == -1 && errno == EINTR);
+	#else
 	while (waitpid(pid, NULL, 0) == -1 && errno == EINTR);
+	#endif // ALLOW_ESCAPE_KEY_IN_EXTERNAL_KEY_HANDLER_PATCH
 
 	for (f = i = 0; f < fcnt; i++) {
 		if ((marked && (files[i].flags & FF_MARK)) || (!marked && i == fileidx)) {
@@ -569,6 +658,11 @@ end:
 	free(oldst);
 	reset_cursor();
 	redraw();
+	#if ALLOW_ESCAPE_KEY_IN_EXTERNAL_KEY_HANDLER_PATCH
+	if (WIFEXITED(status))
+		return WEXITSTATUS(status);
+	return 1;
+	#endif // ALLOW_ESCAPE_KEY_IN_EXTERNAL_KEY_HANDLER_PATCH
 }
 
 #define MODMASK(mask) ((mask) & (ShiftMask|ControlMask|Mod1Mask))
@@ -592,11 +686,19 @@ void on_keypress(XKeyEvent *kev)
 	}
 	if (IsModifierKey(ksym))
 		return;
+	#if ALLOW_ESCAPE_KEY_IN_EXTERNAL_KEY_HANDLER_PATCH
+	if (extprefix) {
+		if (run_key_handler(XKeysymToString(ksym), kev->state & ~sh))
+			extprefix = False;
+		if (one_extkeyhandler_cmd)
+			extprefix = False;
+	#else
 	if (ksym == XK_Escape && MODMASK(kev->state) == 0) {
 		extprefix = False;
 	} else if (extprefix) {
 		run_key_handler(XKeysymToString(ksym), kev->state & ~sh);
 		extprefix = False;
+	#endif // ALLOW_ESCAPE_KEY_IN_EXTERNAL_KEY_HANDLER_PATCH
 	} else if (key >= '0' && key <= '9') {
 		/* number prefix for commands */
 		prefix = prefix * 10 + (int) (key - '0');
@@ -859,6 +961,11 @@ int main(int argc, char **argv)
 	files = emalloc(filecnt * sizeof(*files));
 	memset(files, 0, filecnt * sizeof(*files));
 	fileidx = 0;
+	#if LIBCURL_PATCH
+	rmcnt = 16;
+	rmfiles = emalloc(rmcnt * sizeof(char*));
+	rmidx = 0;
+	#endif // LIBCURL_PATCH
 
 	if (options->from_stdin) {
 		n = 0;
@@ -875,6 +982,19 @@ int main(int argc, char **argv)
 		filename = options->filenames[i];
 
 		if (stat(filename, &fstats) < 0) {
+			#if LIBCURL_PATCH
+			if (is_url(filename)) {
+				char *tmp;
+
+				if (get_url(filename, &tmp) == 0) {
+					check_add_url(tmp, filename, true);
+					free(tmp);
+					continue;
+				} else {
+					error(0, errno, "%s", filename);
+				}
+			}
+			#endif // LIBCURL_PATCH
 			error(0, errno, "%s", filename);
 			continue;
 		}
@@ -901,6 +1021,13 @@ int main(int argc, char **argv)
 
 	filecnt = fileidx;
 	fileidx = options->startnum < filecnt ? options->startnum : 0;
+
+	#if START_FROM_FILE_PATCH
+	if (options->startfile != NULL)
+		for (int i = 0; i < filecnt; ++i)
+			if (strcmp(options->startfile, files[i].path) == 0)
+				fileidx = i;
+	#endif // START_FROM_FILE_PATCH
 
 	for (i = 0; i < ARRLEN(buttons); i++) {
 		if (buttons[i].cmd == i_cursor_navigate) {
@@ -967,6 +1094,9 @@ int main(int argc, char **argv)
 	#endif // WINDOW_FIT_IMAGE_PATCH
 
 	win_open(&win);
+	#if WINDOW_TITLE_PATCH
+	win_set_dynamic_title(&win, files[fileidx].path);
+	#endif // WINDOW_TITLE_PATCH
 	win_set_cursor(&win, CURSOR_WATCH);
 
 	atexit(cleanup);

@@ -24,6 +24,9 @@
 
 #include <stdlib.h>
 #include <string.h>
+#if WINDOW_TITLE_PATCH
+#include <libgen.h>
+#endif // WINDOW_TITLE_PATCH
 #include <locale.h>
 #if EWMH_NET_WM_PID_PATCH
 #include <unistd.h>
@@ -67,8 +70,15 @@ void win_init_font(const win_env_t *e, const char *fontstr)
 
 void win_alloc_color(const win_env_t *e, const char *name, XftColor *col)
 {
-	if (!XftColorAllocName(e->dpy, DefaultVisual(e->dpy, e->scr),
-	                       DefaultColormap(e->dpy, e->scr), name, col))
+	if (!XftColorAllocName(e->dpy,
+		#if ALPHA_PATCH
+		e->vis,
+		e->cmap,
+		#else
+		DefaultVisual(e->dpy, e->scr),
+		DefaultColormap(e->dpy, e->scr),
+		#endif // ALPHA_PATCH
+		name, col))
 	{
 		error(EXIT_FAILURE, 0, "Error allocating color '%s'", name);
 	}
@@ -96,8 +106,19 @@ void win_init(win_t *win)
 {
 	win_env_t *e;
 	const char *bg, *fg, *f;
+	#if MARK_BORDER_PATCH
+	const char *mk;
+	#endif // MARK_BORDER_PATCH
+	#if SEPARATE_BAR_COLORS_PATCH
+	const char *barbg, *barfg;
+	#endif // SEPARATE_BAR_COLORS_PATCH
 	char *res_man;
 	XrmDatabase db;
+	#if ALPHA_PATCH
+	XVisualInfo vis;
+	XWindowAttributes attr;
+	Window parent;
+	#endif // ALPHA_PATCH
 
 	memset(win, 0, sizeof(win_t));
 
@@ -108,9 +129,24 @@ void win_init(win_t *win)
 	e->scr = DefaultScreen(e->dpy);
 	e->scrw = DisplayWidth(e->dpy, e->scr);
 	e->scrh = DisplayHeight(e->dpy, e->scr);
+	#if ALPHA_PATCH
+	parent = options->embed != 0 ? options->embed : RootWindow(e->dpy, e->scr);
+
+	if (options->embed == 0) {
+		e->depth = DefaultDepth(e->dpy, e->scr);
+	} else {
+		XGetWindowAttributes(e->dpy, parent, &attr);
+		e->depth = attr.depth;
+	}
+
+	XMatchVisualInfo(e->dpy, e->scr, e->depth, TrueColor, &vis);
+	e->vis = vis.visual;
+	e->cmap = XCreateColormap(e->dpy, parent, e->vis, None);
+	#else
 	e->vis = DefaultVisual(e->dpy, e->scr);
 	e->cmap = DefaultColormap(e->dpy, e->scr);
 	e->depth = DefaultDepth(e->dpy, e->scr);
+	#endif // ALPHA_PATCH
 
 	if (setlocale(LC_CTYPE, "") == NULL || XSupportsLocale() == 0)
 		error(0, 0, "No locale support");
@@ -122,10 +158,31 @@ void win_init(win_t *win)
 	f = win_res(db, RES_CLASS ".font", "monospace-8");
 	win_init_font(e, f);
 
+	#if WINDOW_TITLE_PATCH
+	win->prefix = win_res(db, RES_CLASS ".titlePrefix", "sxiv - ");
+	win->suffixmode = strtol(win_res(db, RES_CLASS ".titleSuffix", "0"),
+	                         NULL, 10) % SUFFIXMODE_COUNT;
+	#endif // WINDOW_TITLE_PATCH
+
 	bg = win_res(db, RES_CLASS ".background", "white");
 	fg = win_res(db, RES_CLASS ".foreground", "black");
 	win_alloc_color(e, bg, &win->bg);
 	win_alloc_color(e, fg, &win->fg);
+	#if MARK_BORDER_PATCH
+	mk = win_res(db, RES_CLASS ".mark", "orange");
+	win_alloc_color(e, mk, &win->mark);
+	#endif // MARK_BORDER_PATCH
+	#if SEPARATE_BAR_COLORS_PATCH
+	barbg = win_res(db, RES_CLASS ".barbackground", NULL);
+	barfg = win_res(db, RES_CLASS ".barforeground", NULL);
+	#if SWAP_BAR_COLORS_PATCH
+	win_alloc_color(e, barbg ? barbg : bg, &win->barbg);
+	win_alloc_color(e, barfg ? barfg : fg, &win->barfg);
+	#else
+	win_alloc_color(e, barbg ? barbg : fg, &win->barbg);
+	win_alloc_color(e, barfg ? barfg : bg, &win->barfg);
+	#endif // SWAP_BAR_COLORS_PATCH
+	#endif // SEPARATE_BAR_COLORS_PATCH
 
 	win->bar.l.size = BAR_L_LEN;
 	win->bar.r.size = BAR_R_LEN;
@@ -243,8 +300,13 @@ void win_open(win_t *win)
 		if (i != CURSOR_NONE)
 			cursors[i].icon = XCreateFontCursor(e->dpy, cursors[i].name);
 	}
-	if (XAllocNamedColor(e->dpy, DefaultColormap(e->dpy, e->scr), "black",
-	                     &col, &col) == 0)
+	if (XAllocNamedColor(e->dpy,
+		#if ALPHA_PATCH
+		e->cmap,
+		#else
+		DefaultColormap(e->dpy, e->scr),
+		#endif // ALPHA_PATCH
+		"black", &col, &col) == 0)
 	{
 		error(EXIT_FAILURE, 0, "Error allocating color 'black'");
 	}
@@ -272,7 +334,14 @@ void win_open(win_t *win)
 	}
 	free(icon_data);
 
+	#if SET_WINDOW_TITLE_PATCH && WINDOW_TITLE_PATCH
+	if (options->title != NULL)
+		win_set_title(win, options->title);
+	#elif SET_WINDOW_TITLE_PATCH
+	win_set_title(win, options->title != NULL ? options->title : "sxiv");
+	#elif !WINDOW_TITLE_PATCH
 	win_set_title(win, "sxiv");
+	#endif // WINDOW_TITLE_PATCH
 
 	classhint.res_class = RES_CLASS;
 	classhint.res_name = options->res_name != NULL ? options->res_name : "sxiv";
@@ -435,26 +504,56 @@ void win_draw_bar(win_t *win)
 	e = &win->env;
 	y = win->h + font->ascent + V_TEXT_PAD;
 	w = win->w - 2*H_TEXT_PAD;
-	d = XftDrawCreate(e->dpy, win->buf.pm, DefaultVisual(e->dpy, e->scr),
-	                  DefaultColormap(e->dpy, e->scr));
+	d = XftDrawCreate(e->dpy, win->buf.pm,
+		#if ALPHA_PATCH
+		e->vis,
+		e->cmap
+		#else
+		DefaultVisual(e->dpy, e->scr),
+		DefaultColormap(e->dpy, e->scr)
+		#endif // ALPHA_PATCH
+	);
 
+	#if SEPARATE_BAR_COLORS_PATCH
+	XSetForeground(e->dpy, gc, win->barbg.pixel);
+	#elif SWAP_BAR_COLORS_PATCH
+	XSetForeground(e->dpy, gc, win->bg.pixel);
+	#else
 	XSetForeground(e->dpy, gc, win->fg.pixel);
+	#endif // SWAP_BAR_COLORS_PATCH
 	XFillRectangle(e->dpy, win->buf.pm, gc, 0, win->h, win->w, win->bar.h);
 
+	#if SWAP_BAR_COLORS_PATCH
+	XSetForeground(e->dpy, gc, win->fg.pixel);
+	XSetBackground(e->dpy, gc, win->bg.pixel);
+	#else
 	XSetForeground(e->dpy, gc, win->bg.pixel);
 	XSetBackground(e->dpy, gc, win->fg.pixel);
+	#endif // SWAP_BAR_COLORS_PATCH
 
 	if ((len = strlen(r->buf)) > 0) {
 		if ((tw = TEXTWIDTH(win, r->buf, len)) > w)
 			return;
 		x = win->w - tw - H_TEXT_PAD;
 		w -= tw;
+		#if SEPARATE_BAR_COLORS_PATCH
+		win_draw_text(win, d, &win->barfg, x, y, r->buf, len, tw);
+		#elif SWAP_BAR_COLORS_PATCH
+		win_draw_text(win, d, &win->fg, x, y, r->buf, len, tw);
+		#else
 		win_draw_text(win, d, &win->bg, x, y, r->buf, len, tw);
+		#endif // SWAP_BAR_COLORS_PATCH
 	}
 	if ((len = strlen(l->buf)) > 0) {
 		x = H_TEXT_PAD;
 		w -= 2 * H_TEXT_PAD; /* gap between left and right parts */
+		#if SEPARATE_BAR_COLORS_PATCH
+		win_draw_text(win, d, &win->barfg, x, y, l->buf, len, w);
+		#elif SWAP_BAR_COLORS_PATCH
+		win_draw_text(win, d, &win->fg, x, y, l->buf, len, w);
+		#else
 		win_draw_text(win, d, &win->bg, x, y, l->buf, len, w);
+		#endif // SWAP_BAR_COLORS_PATCH
 	}
 	XftDrawDestroy(d);
 }
@@ -483,6 +582,65 @@ void win_draw_rect(win_t *win, int x, int y, int w, int h, bool fill, int lw,
 	else
 		XDrawRectangle(win->env.dpy, win->buf.pm, gc, x, y, w, h);
 }
+
+#if WINDOW_TITLE_PATCH
+void win_set_dynamic_title(win_t *win, const char *path)
+{
+	char *title, *suffix="";
+	static bool first_time = true;
+
+	#if SET_WINDOW_TITLE_PATCH
+	/* Return if user has specified a window title via the command line. */
+	if (options->title != NULL)
+		return;
+	#endif // SET_WINDOW_TITLE_PATCH
+
+	/* Return if window is not ready yet, otherwise we get an X fault. */
+	if (win->xwin == None)
+		return;
+
+	/* Get title suffix type from X-resources. Default: BASE_CDIR. */
+	suffix = estrdup(path);
+	switch (win->suffixmode) {
+		case CFILE:
+			win->suffix = suffix;
+			break;
+		case BASE_CFILE:
+			win->suffix = basename(suffix);
+			break;
+		case CDIR:
+			win->suffix = dirname(suffix);
+			break;
+		case BASE_CDIR:
+			win->suffix = basename(dirname(suffix));
+			break;
+		case SUFFIXMODE_COUNT: // Never happens
+		case EMPTY:
+			win->suffix = "";
+			break;
+	}
+
+	/* Some ancient WM's that don't comply to EMWH (e.g. mwm) only use WM_NAME for
+	 * the window title, which is set by XStoreName below. */
+	title = emalloc(strlen(win->prefix) + strlen(win->suffix) + 1);
+	(void)sprintf(title, "%s%s", win->prefix, win->suffix);
+	XChangeProperty(win->env.dpy, win->xwin, atoms[ATOM__NET_WM_NAME],
+	                XInternAtom(win->env.dpy, "UTF8_STRING", False), 8,
+	                PropModeReplace, (unsigned char *) title, strlen(title));
+	XChangeProperty(win->env.dpy, win->xwin, atoms[ATOM__NET_WM_ICON_NAME],
+	                XInternAtom(win->env.dpy, "UTF8_STRING", False), 8,
+	                PropModeReplace, (unsigned char *) title, strlen(title));
+	free(title);
+	free(suffix);
+
+	/* These two atoms won't change and thus only need to be set once. */
+	if (first_time) {
+		XStoreName(win->env.dpy, win->xwin, "sxiv");
+		XSetIconName(win->env.dpy, win->xwin, "sxiv");
+		first_time = false;
+	}
+}
+#endif // WINDOW_TITLE_PATCH
 
 void win_set_title(win_t *win, const char *title)
 {

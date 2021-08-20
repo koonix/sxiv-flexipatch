@@ -706,12 +706,9 @@ void img_check_pan(img_t *img, bool moved)
 		img->dirty = true;
 }
 
-bool img_fit(img_t *img)
+int img_zoom_diff(img_t *img, float *zptr)
 {
 	float z, zw, zh;
-
-	if (img->scalemode == SCALE_ZOOM)
-		return false;
 
 	zw = (float) img->win->w / (float) img->w;
 	zh = (float) img->win->h / (float) img->h;
@@ -734,13 +731,26 @@ bool img_fit(img_t *img)
 	}
 	z = MIN(z, img->scalemode == SCALE_DOWN ? 1.0 : zoom_max);
 
-	if (zoomdiff(img, z) != 0) {
+	if (zptr != NULL)
+		*zptr = z;
+
+	return zoomdiff(img, z);
+}
+
+bool img_fit(img_t *img)
+{
+	float z;
+
+	if (img->scalemode == SCALE_ZOOM)
+		return false;
+
+	if (img_zoom_diff(img, &z) != 0) {
 		img->zoom = z;
 		img->dirty = true;
 		return true;
-	} else {
-		return false;
 	}
+
+	return false;
 }
 
 void img_render(img_t *img)
@@ -805,7 +815,11 @@ void img_render(img_t *img)
 		if ((bg = imlib_create_image(dw, dh)) == NULL)
 			error(EXIT_FAILURE, ENOMEM, NULL);
 		imlib_context_set_image(bg);
+		#if ALPHA_PATCH
+		imlib_image_set_has_alpha(1);
+		#else
 		imlib_image_set_has_alpha(0);
+		#endif // ALPHA_PATCH
 
 		if (img->alpha) {
 			int i, c, r;
@@ -833,6 +847,9 @@ void img_render(img_t *img)
 		imlib_free_image();
 		imlib_context_set_color_modifier(img->cmod);
 	} else {
+		#if ALPHA_PATCH
+		imlib_image_set_has_alpha(1);
+		#endif // ALPHA_PATCH
 		imlib_render_image_part_on_drawable_at_size(sx, sy, sw, sh, dx, dy, dw, dh);
 	}
 	img->dirty = false;
