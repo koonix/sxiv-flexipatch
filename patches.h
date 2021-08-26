@@ -171,7 +171,7 @@
 /* Makes the window size fit the image when displaying a single image.
  * https://github.com/i-tsvetkov/sxiv-patches
  */
-#define WINDOW_FIT_IMAGE_PATCH 1
+#define WINDOW_FIT_IMAGE_PATCH 0
 
 /* Adds the name or path of the currently viewed file to the window title.
  *
