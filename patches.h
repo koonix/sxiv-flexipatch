@@ -121,7 +121,7 @@
 /* Similar to the "-n" command line option, "-F" starts from a file instead of its index.
  * https://github.com/muennich/sxiv/pull/371
  */
-#define START_FROM_FILE_PATCH 0
+#define START_FROM_FILE_PATCH 1
 
 /* Makes thumbnails square.
  * https://github.com/i-tsvetkov/sxiv-patches
