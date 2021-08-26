@@ -166,7 +166,7 @@
  *
  * https://github.com/muennich/sxiv/pull/437
  */
-#define WEBP_IMAGE_SUPPORT_PATCH 1
+#define WEBP_IMAGE_SUPPORT_PATCH 0
 
 /* Makes the window size fit the image when displaying a single image.
  * https://github.com/i-tsvetkov/sxiv-patches
