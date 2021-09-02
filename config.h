@@ -82,7 +82,7 @@ static const keymap_t keys[] = {
 	#else
 	{ 0,            XK_Return,        g_switch_mode,        None },
 	#endif // DMENU_LIKE_BEHAVIOUR_PATCH
-	{ ControlMask,  XK_f,             g_toggle_fullscreen,  None },
+	{ 0,            XK_f,             g_toggle_fullscreen,  None },
 	{ 0,            XK_b,             g_toggle_bar,         None },
 	{ ControlMask,  XK_x,             g_prefix_external,    None },
 	{ 0,            XK_g,             g_first,              None },
@@ -143,7 +143,7 @@ static const keymap_t keys[] = {
 	#endif // NAVIGATE_IF_NOT_SCROLL_PATCH
 	{ 0,            XK_J,             g_zoom,               -1 },
 	{ 0,            XK_K,             g_zoom,               +1 },
-	{ 0,            XK_f,             i_set_zoom,           100 },
+	{ ControlMask,  XK_f,             i_set_zoom,           100 },
 	{ 0,            XK_w,             i_fit_to_win,         SCALE_DOWN },
 	{ 0,            XK_W,             i_fit_to_win,         SCALE_FIT },
 	#if SCALE_FILL_MODE_PATCH
