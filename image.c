@@ -484,10 +484,9 @@ bool img_load_webp(img_t* img, const fileinfo_t* file)
 Imlib_Image load_webp_firstframe_im(const fileinfo_t *file)
 {
 	struct stat st;
-
 	if (!file->name || !file->path)
 		return NULL;
-	if (!STREQ(strrchr(file->path, '.'), ".webp"))
+	if (!strrchr(file->path, '.') || !STREQ(strrchr(file->path, '.'), ".webp"))
 		return NULL;
 	if (access(file->path, R_OK) != 0 || stat(file->path, &st) != 0 || !S_ISREG(st.st_mode))
 		return NULL;
@@ -575,14 +574,9 @@ Imlib_Image img_open(const fileinfo_t *file)
 	    stat(file->path, &st) == 0 && S_ISREG(st.st_mode))
 	{
 		#if WEBP_IMAGE_SUPPORT_PATCH
-		#if FIFO_PATCH
-		if (im == NULL && !strstr(file->name, "/proc/") && strcmp(file->name, "/dev/stdin"))
-		#else
 		if (im == NULL)
-		#endif // FIFO_PATCH
 			im = load_webp_firstframe_im(file);
 		#endif // WEBP_IMAGE_SUPPORT_PATCH
-
 		if (im == NULL)
 			im = imlib_load_image(file->path);
 
