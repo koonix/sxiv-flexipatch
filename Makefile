@@ -19,10 +19,10 @@ HAVE_LIBEXIF = 1
 #xrender = -lXrender
 
 # Uncomment to enable SVG support / SVG_IMAGE_SUPPORT_PATCH
-#svglibs = `pkg-config --cflags --libs librsvg-2.0 cairo`
+svglibs = `pkg-config --cflags --libs librsvg-2.0 cairo`
 
 # Uncomment to enable WebP support / WEBP_IMAGE_SUPPORT_PATCH
-#webplibs = -lwebpdemux -lwebp
+webplibs = -lwebpdemux -lwebp
 
 # Uncomment to enable libcurl support / LIBCURL_PATCH
 #curllibs = -lcurl

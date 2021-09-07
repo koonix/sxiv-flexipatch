@@ -67,10 +67,10 @@ int filecnt, fileidx;
 int alternate;
 int markcnt;
 int markidx;
-#if LIBCURL_PATCH
+#if LIBCURL_PATCH || FIFO_PATCH
 char **rmfiles;
 int rmcnt, rmidx;
-#endif // LIBCURL_PATCH
+#endif // LIBCURL_PATCH | FIFO_PATCH
 
 int prefix;
 bool extprefix;
@@ -115,9 +115,9 @@ CLEANUP void tmp_unlink(char **rmfiles, int n) {
 
 void cleanup(void)
 {
-	#if LIBCURL_PATCH
+	#if LIBCURL_PATCH || FIFO_PATCH
 	tmp_unlink(rmfiles, rmidx);
-	#endif // LIBCURL_PATCH
+	#endif // LIBCURL_PATCH | FIFO_PATCH
 	img_close(&img, false);
 	arl_cleanup(&arl);
 	tns_free(&tns);
@@ -130,11 +130,35 @@ void internal_check_add_file(char *filename, char *url, bool given)
 void check_add_file(char *filename, bool given)
 #endif // LIBCURL_PATCH
 {
-	char *path;
+	char *path = NULL;
+	#if FIFO_PATCH
+	struct stat st;
+	bool rm = false;
+	#endif // FIFO_PATCH
 
 	if (*filename == '\0')
 		return;
 
+	#if FIFO_PATCH
+	if (access(filename, R_OK) == 0 && stat(filename, &st) == 0) {
+		switch (st.st_mode & S_IFMT) {
+		case S_IFREG:
+			path = realpath(filename, NULL);
+			break;
+
+		case S_IFIFO:
+			path = tmp_pipe_drain(filename);
+			rm = true;
+			break;
+		}
+	}
+
+	if (path == NULL) {
+		if (given)
+			error(0, errno, "%s", filename);
+		return;
+	}
+	#else
 	if (access(filename, R_OK) < 0 ||
 	    (path = realpath(filename, NULL)) == NULL)
 	{
@@ -142,6 +166,7 @@ void check_add_file(char *filename, bool given)
 			error(0, errno, "%s", filename);
 		return;
 	}
+	#endif // FIFO_PATCH
 
 	if (fileidx == filecnt) {
 		filecnt *= 2;
@@ -166,6 +191,18 @@ void check_add_file(char *filename, bool given)
 	if (given)
 		files[fileidx].flags |= FF_WARN;
 	fileidx++;
+
+	#if FIFO_PATCH
+	if (rm) {
+		if (rmidx == rmcnt) {
+			rmcnt *= 2;
+			rmfiles = erealloc(rmfiles, rmcnt * sizeof(char*));
+			memset(&rmfiles[rmcnt/2], 0, rmcnt/2 * sizeof(char*));
+		}
+
+		rmfiles[rmidx++] = path;
+	}
+	#endif // FIFO_PATCH
 }
 
 #if LIBCURL_PATCH
@@ -961,11 +998,12 @@ int main(int argc, char **argv)
 	files = emalloc(filecnt * sizeof(*files));
 	memset(files, 0, filecnt * sizeof(*files));
 	fileidx = 0;
-	#if LIBCURL_PATCH
+
+	#if LIBCURL_PATCH || FIFO_PATCH
 	rmcnt = 16;
 	rmfiles = emalloc(rmcnt * sizeof(char*));
 	rmidx = 0;
-	#endif // LIBCURL_PATCH
+	#endif // LIBCURL_PATCH | FIFO_PATCH
 
 	if (options->from_stdin) {
 		n = 0;

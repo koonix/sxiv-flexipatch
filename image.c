@@ -575,7 +575,11 @@ Imlib_Image img_open(const fileinfo_t *file)
 	    stat(file->path, &st) == 0 && S_ISREG(st.st_mode))
 	{
 		#if WEBP_IMAGE_SUPPORT_PATCH
+		#if FIFO_PATCH
+		if (im == NULL && !strstr(file->name, "/proc/") && strcmp(file->name, "/dev/stdin"))
+		#else
 		if (im == NULL)
+		#endif // FIFO_PATCH
 			im = load_webp_firstframe_im(file);
 		#endif // WEBP_IMAGE_SUPPORT_PATCH
 
