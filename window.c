@@ -292,9 +292,17 @@ void win_open(win_t *win)
 	}
 	#endif // EWMH_WM_CLIENT_MACHINE
 
+	#if EMBED_NOINPUT_PATCH
+	if (!options->embed) {
+		XSelectInput(e->dpy, win->xwin,
+		             ButtonReleaseMask | ButtonPressMask | KeyPressMask |
+		             PointerMotionMask | StructureNotifyMask);
+	}
+	#else
 	XSelectInput(e->dpy, win->xwin,
 	             ButtonReleaseMask | ButtonPressMask | KeyPressMask |
 	             PointerMotionMask | StructureNotifyMask);
+	#endif
 
 	for (i = 0; i < ARRLEN(cursors); i++) {
 		if (i != CURSOR_NONE)
@@ -357,7 +365,11 @@ void win_open(win_t *win)
 
 	#if WM_HINTS_PATCH
 	hints.flags = InputHint | StateHint;
+	#if EMBED_NOINPUT_PATCH
+	hints.input = options->embed ? 0 : 1;
+	#else
 	hints.input = 1;
+	#endif
 	hints.initial_state = NormalState;
 	XSetWMHints(win->env.dpy, win->xwin, &hints);
 	#endif // WM_HINTS_PATCH
@@ -672,4 +684,3 @@ void win_cursor_pos(win_t *win, int *x, int *y)
 	if (!XQueryPointer(win->env.dpy, win->xwin, &w, &w, &i, &i, x, y, &ui))
 		*x = *y = 0;
 }
-

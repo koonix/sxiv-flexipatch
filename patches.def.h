@@ -211,3 +211,9 @@
  * https://github.com/muennich/sxiv/pull/406
  */
 #define WM_HINTS_PATCH 0
+
+/* Make embedded sxiv windows not receive any input,
+ * and pass the input to their parent window. useful
+ * for using sxiv for image previews.
+ */
+#define EMBED_NOINPUT_PATCH 0
