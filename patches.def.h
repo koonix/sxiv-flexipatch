@@ -217,3 +217,7 @@
  * for using sxiv for image previews.
  */
 #define EMBED_NOINPUT_PATCH 0
+
+/* Adds the option "-E" to exit immediately
+ * if the first processed file fails to open. */
+#define FIRST_ERROR_EXIT_PATCH 0

@@ -34,6 +34,9 @@ void print_usage(void)
 		#if DMENU_LIKE_BEHAVIOUR_PATCH
 		"d"
 		#endif // DMENU_LIKE_BEHAVIOUR_PATCH
+		#if FIRST_ERROR_EXIT_PATCH
+		"E"
+		#endif // FIRST_ERROR_EXIT_PATCH
 		"fhiopqrtvZ] [-A FRAMERATE] [-e WID] [-G GAMMA] "
 		"[-g GEOMETRY] [-N NAME] "
 		#if SET_WSET_WINDOW_TITLE_PATCH
@@ -111,6 +114,9 @@ void parse_options(int argc, char **argv)
 		#if START_FROM_FILE_PATCH
 		"F:"
 		#endif // START_FROM_FILE_PATCH
+		#if FIRST_ERROR_EXIT_PATCH
+		"E"
+		#endif // FIRST_ERROR_EXIT_PATCH
 		)) != -1) {
 		switch (opt) {
 			case '?':
@@ -171,6 +177,11 @@ void parse_options(int argc, char **argv)
 				_options.startfile = optarg;
 				break;
 			#endif // START_FROM_FILE_PATCH
+			#if FIRST_ERROR_EXIT_PATCH
+			case 'E':
+				_options.firsterror = true;
+				break;
+			#endif // FIRST_ERROR_EXIT_PATCH
 			case 'N':
 				_options.res_name = optarg;
 				break;

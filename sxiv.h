@@ -306,6 +306,9 @@ struct opt {
 	#if START_FROM_FILE_PATCH
 	char *startfile;
 	#endif // START_FROM_FILE_PATCH
+	#if FIRST_ERROR_EXIT_PATCH
+	bool firsterror;
+	#endif // FIRST_ERROR_EXIT_PATCH
 
 	/* image: */
 	scalemode_t scalemode;
@@ -509,4 +512,3 @@ void win_set_cursor(win_t*, cursor_t);
 void win_cursor_pos(win_t*, int*, int*);
 
 #endif /* SXIV_H */
-

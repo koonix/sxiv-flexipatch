@@ -340,6 +340,9 @@ void load_image(int new)
 {
 	bool prev = new < fileidx;
 	static int current;
+	#if FIRST_ERROR_EXIT_PATCH
+	static int n = 0;
+	#endif // FIRST_ERROR_EXIT_PATCH
 
 	if (new < 0 || new >= filecnt)
 		return;
@@ -354,11 +357,21 @@ void load_image(int new)
 	img_close(&img, false);
 	while (!img_load(&img, &files[new])) {
 		remove_file(new, false);
+		#if FIRST_ERROR_EXIT_PATCH
+		if (options->firsterror && n == 0) {
+			fprintf(stderr, "sxiv: couldn't open the first image, aborting\n");
+			exit(EXIT_FAILURE);
+		}
+		#endif // FIRST_ERROR_EXIT_PATCH
 		if (new >= filecnt)
 			new = filecnt - 1;
 		else if (new > 0 && prev)
 			new--;
 	}
+	#if FIRST_ERROR_EXIT_PATCH
+	if (n == 0)
+		n++;
+	#endif // FIRST_ERROR_EXIT_PATCH
 	files[new].flags &= ~FF_WARN;
 	fileidx = current = new;
 

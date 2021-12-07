@@ -3,7 +3,7 @@
 sxiv \- Simple X Image Viewer
 .SH SYNOPSIS
 .B sxiv
-.RB [ \-abcfhiopqrtvZ ]
+.RB [ \-abcEfhiopqrtvZ ]
 .RB [ \-A
 .IR FRAMERATE ]
 .RB [ \-e
@@ -74,6 +74,10 @@ Start at picture number NUM.
 .TP
 .BI "\-F " FILE
 Start at picture file FILE.
+.TP
+.B \-E
+Exit if sxiv fails to open the first file. Useful
+in combination with \fB\-n\fP or \fB-F\fP.
 .TP
 .B \-h
 Print brief usage information to standard output and exit.
