@@ -218,6 +218,7 @@
  */
 #define EMBED_NOINPUT_PATCH 0
 
-/* Adds the option "-E" to exit immediately
- * if the first processed file fails to open. */
+/* Adds the command line option "-E" to exit immediately if sxiv fails to open
+ * the first file. Useful in combination with the "-n" or "-F" command line options.
+ */
 #define FIRST_ERROR_EXIT_PATCH 0
