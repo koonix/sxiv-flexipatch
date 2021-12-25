@@ -62,6 +62,20 @@
  */
 #define EWMH_WM_CLIENT_MACHINE 0
 
+/* Adds support for pipe-based redirection for sxiv.
+ *
+ * Example commands:
+ *   $ sxiv <(curl -s https://i.imgur.com/JdfIbt4g.png) <(curl -s https://i.imgur.com/WwcW92d.png)
+ *   $ curl -s https://i.imgur.com/JdfIbt4g.png | sxiv /dev/stdin
+ *
+ * This is not possible out of the box because FIFO/pipe files are not seekable which breaks
+ * things. The patch works around this by draining the pipe to a temporary file which is displayed
+ * and unlinked on exit.
+ *
+ * https://github.com/muennich/sxiv/pull/369
+ */
+#define FIFO_PATCH 0
+
 /* Adds the ability to cycle when viewing multiple images.
  * https://github.com/i-tsvetkov/sxiv-patches
  */

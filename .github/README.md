@@ -21,6 +21,8 @@ version and further details on sxiv, how to install it and how it works.
 
 ### Changelog:
 
+2021-09-07 - Added the fifo patch
+
 2021-06-11 - Added the alpha patch
 
 2021-06-10 - Added the "allow escape key in external key handler" patch (for the lack of a better
@@ -61,6 +63,9 @@ version and further details on sxiv, how to install it and how it works.
 
    - [ewmh-wm-client-machine](https://github.com/muennich/sxiv/pull/403)
       - sets the WM_CLIENT_MACHINE X property
+
+   - [fifo](https://github.com/muennich/sxiv/pull/369)
+      - adds support for pipe-based redirection for sxiv
 
    - [image-mode-cycle](https://github.com/i-tsvetkov/sxiv-patches)
       - adds the ability to cycle when viewing multiple images
