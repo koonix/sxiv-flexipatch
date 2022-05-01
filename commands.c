@@ -488,6 +488,11 @@ bool ct_move_sel(arg_t dir)
 	return tns_move_selection(&tns, dir, prefix);
 }
 
+bool ct_jump_sel(arg_t dir)
+{
+	return tns_move_selection(&tns, dir, prefix ? prefix * 5 : 5);
+}
+
 bool ct_reload_all(arg_t _)
 {
 	tns_free(&tns);
@@ -507,4 +512,3 @@ bool ct_reload_all(arg_t _)
 const cmd_t cmds[CMD_COUNT] = {
 #include "commands.lst"
 };
-

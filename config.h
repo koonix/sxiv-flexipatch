@@ -18,7 +18,7 @@ enum {
  * (first/last value is used as min/max zoom level)
  */
 static const float zoom_levels[] = {
-	 6.25, 12.5, 18.75,  25.0, 37.5,  50.0, 62.5, 75.0,
+	 6.25, 12.5, 18.75, 25.0, 31.25, 37.5, 43.75, 50.0, 62.5, 75.0, 87.5,
 	100.0, 125.0, 150.0, 175.0, 200.0, 300.0, 400.0, 600.0, 800.0
 };
 
@@ -114,6 +114,18 @@ static const keymap_t keys[] = {
 	{ 0,            XK_Down,          t_move_sel,           DIR_DOWN },
 	{ 0,            XK_Right,         t_move_sel,           DIR_RIGHT },
 	{ 0,            XK_Up,            t_move_sel,           DIR_UP },
+	{ ControlMask,  XK_h,             t_jump_sel,           DIR_LEFT },
+	{ ControlMask,  XK_j,             t_jump_sel,           DIR_DOWN },
+	{ ControlMask,  XK_k,             t_jump_sel,           DIR_UP },
+	{ ControlMask,  XK_l,             t_jump_sel,           DIR_RIGHT },
+	{ ControlMask,  XK_Left,          t_jump_sel,           DIR_LEFT },
+	{ ControlMask,  XK_Down,          t_jump_sel,           DIR_DOWN },
+	{ ControlMask,  XK_Right,         t_jump_sel,           DIR_RIGHT },
+	{ ControlMask,  XK_Up,            t_jump_sel,           DIR_UP },
+    { ControlMask,  XK_u,             t_jump_sel,           DIR_UP },
+    { ControlMask,  XK_d,             t_jump_sel,           DIR_DOWN },
+    { 0,            XK_Page_Up,       t_jump_sel,           DIR_UP },
+    { 0,            XK_Page_Down,     t_jump_sel,           DIR_DOWN },
 	{ 0,            XK_R,             t_reload_all,         None },
 
 	{ 0,            XK_n,             i_navigate,           +1 },
